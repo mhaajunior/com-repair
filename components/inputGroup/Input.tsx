@@ -1,5 +1,3 @@
-"use client";
-
 import "@/styles/Input.css";
 
 const Input = ({
