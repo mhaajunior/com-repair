@@ -6,22 +6,48 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --primary: #00b386;
+  --gray: #b6b6af;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
   }
 }
 
 body {
   color: rgb(var(--foreground-rgb));
+  background: rgb(49, 207, 181);
   background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+    120deg,
+    rgba(49, 207, 181, 0.27494747899159666) 37%,
+    rgba(0, 212, 255, 0.4738270308123249) 59%,
+    rgba(86, 148, 144, 0.22452731092436973) 90%
+  );
+}
+
+.title-text {
+  background: -webkit-radial-gradient(
+    circle,
+    rgba(13, 8, 96, 1) 0%,
+    rgba(9, 9, 121, 1) 21%,
+    rgba(6, 84, 170, 1) 51%,
+    rgba(0, 255, 113, 1) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.card {
+  width: 100%;
+  min-height: 50px;
+  box-sizing: border-box;
+  padding: 2em;
+  background-color: white;
+  line-height: 25px;
+  box-shadow: 5px 5px 10px #ccc;
+  margin: 2em 0;
+  border-radius: 10px;
+  opacity: 0.5;
 }
