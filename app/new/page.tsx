@@ -53,82 +53,91 @@ const NewIssuePage = () => {
   });
 
   return (
-    <div className="sm:px-24 py-5">
+    <div className="sm:px-16 md:px-24 px-8 py-5">
       <h1 className="text-3xl">
         แบบฟอร์มการแจ้งซ่อมคอมพิวเตอร์ออนไลน์และอุปกรณ์ต่อพ่วง
       </h1>
-      <form className="card" onSubmit={onSubmit}>
-        <InputWrap label="ชื่อ*" isValid={!errors.name}>
+      <form className="card flex flex-wrap" onSubmit={onSubmit}>
+        <InputWrap label="ชื่อ" isValid={!errors.name} required>
           <Input
             name="name"
             placeholder="ชื่อ"
             register={register}
-            className="w-72"
+            className="w-60 md:w-72"
           />
           {<ErrorMessage>{errors.name?.message}</ErrorMessage>}
         </InputWrap>
-        <InputWrap label="นามสกุล*" isValid={!errors.surname}>
+        <InputWrap label="นามสกุล" isValid={!errors.surname} required>
           <Input
             name="surname"
             placeholder="นามสกุล"
             register={register}
-            className="w-72"
+            className="w-60 md:w-72"
           />
           {<ErrorMessage>{errors.surname?.message}</ErrorMessage>}
         </InputWrap>
-        <InputWrap label="ศูนย์/สำนัก/กอง*" isValid={!errors.team}>
+        <InputWrap label="ศูนย์/สำนัก/กอง" isValid={!errors.team} required>
           <Dropdown
             name="team"
             placeholder="ศูนย์/สำนัก/กอง"
             options={options}
-            className="w-72"
+            className="w-60 md:w-72"
             control={control}
           />
           {<ErrorMessage>{errors.team?.message}</ErrorMessage>}
         </InputWrap>
-        <InputWrap label="กลุ่มงาน*" isValid={!errors.group}>
+        <InputWrap label="กลุ่มงาน" isValid={!errors.group} required>
           <Dropdown
             name="group"
             placeholder="กลุ่มงาน"
             options={options}
-            className="w-72"
+            className="w-60 md:w-72"
             control={control}
           />
           {<ErrorMessage>{errors.group?.message}</ErrorMessage>}
         </InputWrap>
-        <InputWrap label="เบอร์โทรศัพท์*" isValid={!errors.phone}>
+        <InputWrap label="เบอร์โทรศัพท์" isValid={!errors.phone} required>
           <Input
             name="phone"
             placeholder="เบอร์โทรศัพท์"
+            type="text"
+            pattern="\d*"
+            maxlength="10"
             register={register}
-            className="w-72"
+            className="w-60 md:w-72"
           />
           {<ErrorMessage>{errors.phone?.message}</ErrorMessage>}
         </InputWrap>
-        <InputWrap label="ประเภทของปัญหา*" isValid={!errors.problem}>
+        <InputWrap label="ประเภทของปัญหา" isValid={!errors.problem} required>
           <Dropdown
             name="problem"
             placeholder="ประเภทของปัญหา"
             options={options}
-            className="w-72"
+            className="w-60 md:w-72"
             control={control}
           />
           {<ErrorMessage>{errors.problem?.message}</ErrorMessage>}
         </InputWrap>
-        <InputWrap label="รายละเอียดอาการเสีย/ปัญหา*" isValid={!errors.detail}>
+        <InputWrap
+          label="รายละเอียดอาการเสีย/ปัญหา"
+          isValid={!errors.detail}
+          required
+        >
           <Input
             name="detail"
             placeholder="เขียนรายละเอียดอาการเสีย/ปัญหา"
             register={register}
-            className="w-72"
+            className="w-60 md:w-72"
             textarea
           />
           {<ErrorMessage>{errors.detail?.message}</ErrorMessage>}
         </InputWrap>
         {/* เพิ่ม field รูปภาพ */}
-        <Button type="submit" primary className="!mx-auto !mt-10">
-          ส่งฟอร์ม
-        </Button>
+        <div className="w-full">
+          <Button type="submit" primary className="!mx-auto !mt-10">
+            ส่งฟอร์ม
+          </Button>
+        </div>
       </form>
     </div>
   );

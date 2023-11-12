@@ -16,15 +16,16 @@ const Input = ({
       {!textarea && (
         <input
           type={rest.type}
-          className={`input ${rest.className}`}
+          className={`input ${rest.className ? rest.className : ""}`}
           placeholder={`${placeholder}`}
           autoComplete="off"
+          maxLength={rest.maxlength || 255}
           {...rest.register(name)}
         />
       )}
       {textarea && (
         <textarea
-          className={`input ${rest.className}`}
+          className={`input ${rest.className ? rest.className : ""}`}
           placeholder={`${placeholder}`}
           rows="4"
           {...rest.register(name)}

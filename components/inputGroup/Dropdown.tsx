@@ -27,9 +27,9 @@ const Dropdown = ({
           onBlur={onBlur}
           name={name}
           ref={ref}
-          className={rest.className}
           classNamePrefix="dropdown"
           placeholder={placeholder}
+          className={rest.className ? rest.className : ""}
         />
       )}
     />
