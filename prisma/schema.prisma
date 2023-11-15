@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Issue {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(32)
+  surname String @db.VarChar(32)
+  teamId Int
+  team Team @relation(fields: [teamId], references: [id])
+  groupId Int
+  group Group @relation(fields: [groupId], references: [id])
+  phone String @db.VarChar(10)
+  problemId Int
+  problem Problem @relation(fields: [problemId], references: [id])
+  detail String @db.Text
+
+  fixResult String? @db.Text
+  status Status @default(OPEN)
+
+  createdAt DateTime @default(now())
+  fixStartDate DateTime?
+  fixEndDate DateTime?
+}
+
+enum Status {
+  OPEN
+  ACKNOWLEDGE
+  IN_PROGRESS
+  NOTIFY
+  CANT_FIX
+  CANCELED
+  CLOSED
+}
+
+model Team {
+  id Int @id @default(autoincrement())
+  label String @unique
+  abb String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  issue Issue[]
+  group Group[]
+}
+
+model Group {
+  id Int @id @default(autoincrement())
+  label String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  issue Issue[]
+  teamId Int
+  team Team @relation(fields: [teamId], references: [id])
+
+  @@unique(fields: [label, teamId], name: "labelTeam")
+}
+
+model Problem {
+  id Int @id @default(autoincrement())
+  label String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  issue Issue[]
+}
+

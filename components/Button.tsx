@@ -32,12 +32,12 @@ const Button = ({
       "btn-danger": danger,
       "btn-warning": warning,
       "rounded-3xl": rounded,
-      "opacity-50": loading,
+      "opacity-50 cursor-not-allowed": loading,
     }
   );
 
   return (
-    <button {...rest} className={classes}>
+    <button {...rest} className={classes} disabled={loading}>
       {loading ? (
         <AiOutlineLoading3Quarters className="animate-spin text-white mx-auto" />
       ) : (

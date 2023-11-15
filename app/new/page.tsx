@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import { createIssueSchema } from "@/types/validationSchemas";
 import { SelectOptionType } from "@/types/inputProps";
 import InputWrap from "@/components/inputGroup/InputWrap";
@@ -13,12 +15,14 @@ import Input from "@/components/inputGroup/Input";
 import Dropdown from "@/components/inputGroup/Dropdown";
 import Button from "@/components/Button";
 import ErrorMessage from "@/components/ErrorMessage";
+import { errorHandler } from "@/helpers/errorHandler";
 
 type IssueForm = z.infer<typeof createIssueSchema>;
 
 const NewIssuePage = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [teams, setTeams] = useState<SelectOptionType[]>([]);
+  const [problems, setProblems] = useState<SelectOptionType[]>([]);
   const router = useRouter();
   const {
     register,
@@ -28,6 +32,20 @@ const NewIssuePage = () => {
   } = useForm<IssueForm>({
     resolver: zodResolver(createIssueSchema),
   });
+
+  useEffect(() => {
+    const getDropdownData = async () => {
+      try {
+        const { data } = await axios.get("/api/common");
+        setTeams(data.dropdownTeams);
+        setProblems(data.dropdownProblems);
+      } catch (err: any) {
+        errorHandler(err);
+      }
+    };
+
+    getDropdownData();
+  }, []);
 
   // hard code
   const options: SelectOptionType[] = [
@@ -45,10 +63,11 @@ const NewIssuePage = () => {
     try {
       setLoading(true);
       await axios.post("/api/issues", data);
+      toast.success("สร้างฟอร์มแจ้งซ่อมสำเร็จ");
       router.push("/");
-    } catch (err) {
+    } catch (err: any) {
+      errorHandler(err);
       setLoading(false);
-      setError("เกิดข้อผิดพลาดบางอย่าง กรุณาลองใหม่อีกครั้ง");
     }
   });
 
@@ -65,7 +84,7 @@ const NewIssuePage = () => {
             register={register}
             className="w-60 md:w-72"
           />
-          {<ErrorMessage>{errors.name?.message}</ErrorMessage>}
+          <ErrorMessage>{errors.name?.message}</ErrorMessage>
         </InputWrap>
         <InputWrap label="นามสกุล" isValid={!errors.surname} required>
           <Input
@@ -74,17 +93,17 @@ const NewIssuePage = () => {
             register={register}
             className="w-60 md:w-72"
           />
-          {<ErrorMessage>{errors.surname?.message}</ErrorMessage>}
+          <ErrorMessage>{errors.surname?.message}</ErrorMessage>
         </InputWrap>
         <InputWrap label="ศูนย์/สำนัก/กอง" isValid={!errors.team} required>
           <Dropdown
             name="team"
             placeholder="ศูนย์/สำนัก/กอง"
-            options={options}
+            options={teams}
             className="w-60 md:w-72"
             control={control}
           />
-          {<ErrorMessage>{errors.team?.message}</ErrorMessage>}
+          <ErrorMessage>{errors.team?.message}</ErrorMessage>
         </InputWrap>
         <InputWrap label="กลุ่มงาน" isValid={!errors.group} required>
           <Dropdown
@@ -94,7 +113,7 @@ const NewIssuePage = () => {
             className="w-60 md:w-72"
             control={control}
           />
-          {<ErrorMessage>{errors.group?.message}</ErrorMessage>}
+          <ErrorMessage>{errors.group?.message}</ErrorMessage>
         </InputWrap>
         <InputWrap label="เบอร์โทรศัพท์" isValid={!errors.phone} required>
           <Input
@@ -106,17 +125,17 @@ const NewIssuePage = () => {
             register={register}
             className="w-60 md:w-72"
           />
-          {<ErrorMessage>{errors.phone?.message}</ErrorMessage>}
+          <ErrorMessage>{errors.phone?.message}</ErrorMessage>
         </InputWrap>
         <InputWrap label="ประเภทของปัญหา" isValid={!errors.problem} required>
           <Dropdown
             name="problem"
             placeholder="ประเภทของปัญหา"
-            options={options}
+            options={problems}
             className="w-60 md:w-72"
             control={control}
           />
-          {<ErrorMessage>{errors.problem?.message}</ErrorMessage>}
+          <ErrorMessage>{errors.problem?.message}</ErrorMessage>
         </InputWrap>
         <InputWrap
           label="รายละเอียดอาการเสีย/ปัญหา"
@@ -130,11 +149,16 @@ const NewIssuePage = () => {
             className="w-60 md:w-72"
             textarea
           />
-          {<ErrorMessage>{errors.detail?.message}</ErrorMessage>}
+          <ErrorMessage>{errors.detail?.message}</ErrorMessage>
         </InputWrap>
         {/* เพิ่ม field รูปภาพ */}
         <div className="w-full">
-          <Button type="submit" primary className="!mx-auto !mt-10">
+          <Button
+            type="submit"
+            primary
+            className="!mx-auto !mt-10"
+            loading={loading}
+          >
             ส่งฟอร์ม
           </Button>
         </div>

@@ -1,8 +1,14 @@
 import { z } from "zod";
 
 export const createIssueSchema = z.object({
-  name: z.string().min(1, "กรุณากรอกชื่อ"),
-  surname: z.string().min(1, "กรุณากรอกนามสกุล"),
+  name: z
+    .string()
+    .min(1, "กรุณากรอกชื่อ")
+    .max(32, "ชื่อที่กรอกยาวเกินกว่าที่กำหนด"),
+  surname: z
+    .string()
+    .min(1, "กรุณากรอกนามสกุล")
+    .max(32, "นามสกุลที่กรอกยาวเกินกว่าที่กำหนด"),
   team: z.number({
     required_error: "กรุณาเลือกศูนย์/สำนัก/กอง",
   }),
@@ -23,5 +29,17 @@ export const createIssueSchema = z.object({
   detail: z
     .string()
     .min(1, "กรุณากรอกรายละเอียด")
-    .max(255, "รายละเอียดที่กรอกมากเกินกว่าที่กำหนด"),
+    .max(255, "รายละเอียดที่กรอกยาวเกินกว่าที่กำหนด"),
+});
+
+export const searchIssueSchema = z.object({
+  id: z.coerce
+    .number({
+      invalid_type_error: "กรุณากรอกหมายเลขใบแจ้งเป็นตัวเลข",
+    })
+    .optional(),
+  fullname: z
+    .string()
+    .max(64, "ชื่อ-นามสกุลที่กรอกยาวเกินกว่าที่กำหนด")
+    .optional(),
 });

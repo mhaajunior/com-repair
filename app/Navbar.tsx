@@ -1,7 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export const Navbar = () => {
+  const currentPath = usePathname();
+
   const navItems = [
     {
       title: "ฟอร์มแจ้งซ่อม",
@@ -23,7 +28,12 @@ export const Navbar = () => {
         </li>
         {navItems.map((item) => (
           <li key={item.title}>
-            <Link href={item.link}>{item.title}</Link>
+            <Link
+              href={item.link}
+              className={item.link === currentPath ? "text-gray-900" : ""}
+            >
+              {item.title}
+            </Link>
           </li>
         ))}
       </ul>

@@ -1,9 +1,9 @@
-export type OptionProps = {
+export interface OptionProps {
   name: string;
   id: number;
-};
+}
 
-export type SelectOptionType = {
+export interface SelectOptionType {
   label: string;
   value: number;
-};
+}

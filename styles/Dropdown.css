@@ -5,13 +5,9 @@
   box-shadow: none;
 }
 
-.dropdown__control:hover {
-  border: 1px solid var(--primary) !important;
-}
-
+.dropdown__control:hover,
 .dropdown__control:focus {
   border: 1px solid var(--primary) !important;
-  outline: none;
 }
 
 .dropdown__placeholder {

@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Issue" ALTER COLUMN "fixResult" DROP NOT NULL,
+ALTER COLUMN "fixStartDate" DROP NOT NULL,
+ALTER COLUMN "fixEndDate" DROP NOT NULL;
