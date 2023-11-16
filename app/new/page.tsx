@@ -22,10 +22,13 @@ type IssueForm = z.infer<typeof createIssueSchema>;
 const NewIssuePage = () => {
   const [loading, setLoading] = useState(false);
   const [teams, setTeams] = useState<SelectOptionType[]>([]);
+  const [groups, setGroups] = useState<SelectOptionType[]>([]);
   const [problems, setProblems] = useState<SelectOptionType[]>([]);
   const router = useRouter();
   const {
     register,
+    watch,
+    setValue,
     handleSubmit,
     control,
     formState: { errors },
@@ -36,9 +39,12 @@ const NewIssuePage = () => {
   useEffect(() => {
     const getDropdownData = async () => {
       try {
-        const { data } = await axios.get("/api/common");
-        setTeams(data.dropdownTeams);
-        setProblems(data.dropdownProblems);
+        const { data: dropdownTeams } = await axios.get("/api/common/team");
+        const { data: dropdownProblems } = await axios.get(
+          "/api/common/problem"
+        );
+        setTeams(dropdownTeams);
+        setProblems(dropdownProblems);
       } catch (err: any) {
         errorHandler(err);
       }
@@ -47,17 +53,23 @@ const NewIssuePage = () => {
     getDropdownData();
   }, []);
 
-  // hard code
-  const options: SelectOptionType[] = [
-    {
-      value: 1,
-      label: "แสดงครัวเรือนทั้งหมด",
-    },
-    {
-      value: 2,
-      label: "แสดงครัวเรือนที่มีความผิดพลาด",
-    },
-  ];
+  useEffect(() => {
+    const getDropdownGroup = async () => {
+      if (watch("team")) {
+        try {
+          const { data: dropdownGroups } = await axios.get(
+            `/api/common/group/${watch("team")}`
+          );
+          setGroups(dropdownGroups);
+          setValue("group", 0);
+        } catch (err: any) {
+          errorHandler(err);
+        }
+      }
+    };
+
+    getDropdownGroup();
+  }, [watch("team")]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -109,7 +121,7 @@ const NewIssuePage = () => {
           <Dropdown
             name="group"
             placeholder="กลุ่มงาน"
-            options={options}
+            options={groups}
             className="w-60 md:w-72"
             control={control}
           />
@@ -119,7 +131,7 @@ const NewIssuePage = () => {
           <Input
             name="phone"
             placeholder="เบอร์โทรศัพท์"
-            type="text"
+            type="tel"
             pattern="\d*"
             maxlength="10"
             register={register}

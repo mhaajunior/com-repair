@@ -5,6 +5,8 @@ import { SelectOptionType } from "@/types/inputProps";
 
 export const GET = async (req: NextRequest) => {
   try {
+    const dropdownTeams: SelectOptionType[] = [];
+
     const teams = await prisma.team.findMany({
       select: {
         id: true,
@@ -13,8 +15,6 @@ export const GET = async (req: NextRequest) => {
       },
     });
 
-    const dropdownTeams: SelectOptionType[] = [];
-    const dropdownProblems: SelectOptionType[] = [];
     for (let team of teams) {
       dropdownTeams.push({
         value: team.id,
@@ -22,20 +22,7 @@ export const GET = async (req: NextRequest) => {
       });
     }
 
-    const problems = await prisma.problem.findMany({
-      select: {
-        id: true,
-        label: true,
-      },
-    });
-    problems.map((problem) =>
-      dropdownProblems.push({
-        value: problem.id,
-        label: problem.label,
-      })
-    );
-
-    return NextResponse.json({ dropdownTeams, dropdownProblems });
+    return NextResponse.json(dropdownTeams);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       console.log(e);

@@ -16,13 +16,25 @@ const Dropdown = ({
   isControl?: boolean;
   [rest: string]: any;
 }) => {
+  const getValue = (value: number) => {
+    if (value) {
+      for (let option of options) {
+        if (option.value === value) {
+          return option;
+        }
+      }
+    }
+
+    return null;
+  };
+
   return (
     <>
       {isControl && (
         <Controller
           control={rest.control}
           name={name}
-          render={({ field: { onChange, onBlur, name, ref } }) => (
+          render={({ field: { onChange, onBlur, name, ref, value } }) => (
             <Select
               options={options}
               onChange={(option: SelectOptionType | null) =>
@@ -31,6 +43,7 @@ const Dropdown = ({
               onBlur={onBlur}
               name={name}
               ref={ref}
+              value={getValue(value)}
               classNamePrefix="dropdown"
               placeholder={placeholder}
               className={rest.className ? rest.className : ""}

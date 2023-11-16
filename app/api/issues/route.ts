@@ -15,7 +15,7 @@ export const POST = async (req: NextRequest) => {
 
   const trimName = name.trim();
   const trimSurname = surname.trim();
-  const trimPhone = phone.toString().trim();
+  const trimPhone = phone.trim();
   const trimDetail = detail.trim();
 
   if (!trimName || !trimSurname || !trimPhone || !trimDetail) {
@@ -27,10 +27,10 @@ export const POST = async (req: NextRequest) => {
       data: {
         name: trimName,
         surname: trimSurname,
-        team,
-        group,
+        teamId: team,
+        groupId: group,
         phone: trimPhone,
-        problem,
+        problemId: problem,
         detail: trimDetail,
       },
     });
