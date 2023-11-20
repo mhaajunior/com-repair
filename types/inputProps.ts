@@ -3,7 +3,11 @@ export interface OptionProps {
   id: number;
 }
 
-export interface SelectOptionType {
+export interface SelectOption {
   label: string;
   value: number;
+}
+
+export interface SelectOptionWithTeam extends SelectOption {
+  teamId: number;
 }

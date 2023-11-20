@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { createIssueSchema } from "@/types/validationSchemas";
-import { SelectOptionType } from "@/types/inputProps";
+import { SelectOption, SelectOptionWithTeam } from "@/types/inputProps";
 import InputWrap from "@/components/inputGroup/InputWrap";
 import Input from "@/components/inputGroup/Input";
 import Dropdown from "@/components/inputGroup/Dropdown";
@@ -21,9 +21,10 @@ type IssueForm = z.infer<typeof createIssueSchema>;
 
 const NewIssuePage = () => {
   const [loading, setLoading] = useState(false);
-  const [teams, setTeams] = useState<SelectOptionType[]>([]);
-  const [groups, setGroups] = useState<SelectOptionType[]>([]);
-  const [problems, setProblems] = useState<SelectOptionType[]>([]);
+  const [teams, setTeams] = useState<SelectOption[]>([]);
+  const [groups, setGroups] = useState<SelectOptionWithTeam[]>([]);
+  const [filteredGroups, setFilteredGroups] = useState<SelectOption[]>([]);
+  const [problems, setProblems] = useState<SelectOption[]>([]);
   const router = useRouter();
   const {
     register,
@@ -35,16 +36,15 @@ const NewIssuePage = () => {
   } = useForm<IssueForm>({
     resolver: zodResolver(createIssueSchema),
   });
+  const teamId = watch("team");
 
   useEffect(() => {
     const getDropdownData = async () => {
       try {
-        const { data: dropdownTeams } = await axios.get("/api/common/team");
-        const { data: dropdownProblems } = await axios.get(
-          "/api/common/problem"
-        );
-        setTeams(dropdownTeams);
-        setProblems(dropdownProblems);
+        const { data } = await axios.get("/api/common");
+        setTeams(data.teams);
+        setGroups(data.groups);
+        setProblems(data.problems);
       } catch (err: any) {
         errorHandler(err);
       }
@@ -55,21 +55,14 @@ const NewIssuePage = () => {
 
   useEffect(() => {
     const getDropdownGroup = async () => {
-      if (watch("team")) {
-        try {
-          const { data: dropdownGroups } = await axios.get(
-            `/api/common/group/${watch("team")}`
-          );
-          setGroups(dropdownGroups);
-          setValue("group", 0);
-        } catch (err: any) {
-          errorHandler(err);
-        }
+      if (teamId) {
+        setFilteredGroups(groups.filter((group) => group.teamId === teamId));
+        setValue("group", 0);
       }
     };
 
     getDropdownGroup();
-  }, [watch("team")]);
+  }, [teamId, setValue, groups]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -121,7 +114,7 @@ const NewIssuePage = () => {
           <Dropdown
             name="group"
             placeholder="กลุ่มงาน"
-            options={groups}
+            options={filteredGroups}
             className="w-60 md:w-72"
             control={control}
           />

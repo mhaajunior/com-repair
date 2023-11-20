@@ -1,4 +1,4 @@
-import { SelectOptionType } from "@/types/inputProps";
+import { SelectOption } from "@/types/inputProps";
 import { Controller } from "react-hook-form";
 import Select from "react-select";
 import "@/styles/Dropdown.css";
@@ -12,7 +12,7 @@ const Dropdown = ({
 }: {
   name: string;
   placeholder: string;
-  options: SelectOptionType[];
+  options: SelectOption[];
   isControl?: boolean;
   [rest: string]: any;
 }) => {
@@ -37,7 +37,7 @@ const Dropdown = ({
           render={({ field: { onChange, onBlur, name, ref, value } }) => (
             <Select
               options={options}
-              onChange={(option: SelectOptionType | null) =>
+              onChange={(option: SelectOption | null) =>
                 onChange(option?.value)
               }
               onBlur={onBlur}
@@ -54,7 +54,7 @@ const Dropdown = ({
       {!isControl && (
         <Select
           options={options}
-          onChange={(option: SelectOptionType | null) =>
+          onChange={(option: SelectOption | null) =>
             rest.setterFn(option?.value)
           }
           name={name}

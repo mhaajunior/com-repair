@@ -1,11 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/db";
 import { Prisma } from "@prisma/client";
-import { SelectOptionType } from "@/types/inputProps";
+import { SelectOption } from "@/types/inputProps";
 
-export const GET = async (req: NextRequest) => {
+export const getProblems = async () => {
   try {
-    const dropdownProblems: SelectOptionType[] = [];
+    const dropdownProblems: SelectOption[] = [];
 
     const problems = await prisma.problem.findMany({
       select: {
@@ -21,7 +20,7 @@ export const GET = async (req: NextRequest) => {
       })
     );
 
-    return NextResponse.json(dropdownProblems);
+    return dropdownProblems;
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       console.log(e);

@@ -104,45 +104,59 @@ const SearchIssuePage = () => {
       <h1 className="text-3xl">
         ค้นหาใบแจ้งซ่อมคอมพิวเตอร์ออนไลน์และอุปกรณ์ต่อพ่วง
       </h1>
-      <form
-        className="card flex flex-wrap gap-x-5 items-center"
-        onSubmit={onSubmit}
-      >
-        <div className="w-full">
-          <ErrorMessage>{error}</ErrorMessage>
-        </div>
-        <div className="relative">
-          <Input
-            name="id"
-            placeholder="หมายเลขใบแจ้ง"
-            register={register}
-            className="w-60 md:w-72 h-[40px]"
-          />
-          <span className="absolute left-0 top-10">
-            <ErrorMessage>{errors.id?.message}</ErrorMessage>
-          </span>
-        </div>
-        <div className="relative">
-          <Input
-            name="fullname"
-            placeholder="ชื่อ นามสกุล"
-            register={register}
-            className="w-60 md:w-72 h-[40px]"
-          />
-          <span className="absolute left-0 top-10">
-            <ErrorMessage>{errors.fullname?.message}</ErrorMessage>
-          </span>
-        </div>
-        <Button type="submit" primary loading={loading}>
-          <AiOutlineSearch />
-        </Button>
-      </form>
-      {isSubmitSuccessful &&
-        (response.length > 0 ? (
-          <Table columns={columns} dataSource={response} scroll={{ x: 1500 }} />
-        ) : (
-          <Empty />
-        ))}
+      <div className="card ">
+        <form
+          onSubmit={onSubmit}
+          className="flex flex-wrap gap-x-5 items-center mb-2"
+        >
+          <div className="w-full">
+            <ErrorMessage>{error}</ErrorMessage>
+          </div>
+          <div className="relative">
+            <Input
+              name="id"
+              placeholder="หมายเลขใบแจ้ง"
+              register={register}
+              className="w-60 md:w-72 h-[40px]"
+            />
+            <span className="absolute left-0 top-10">
+              <ErrorMessage>{errors.id?.message}</ErrorMessage>
+            </span>
+          </div>
+          <div className="relative">
+            <Input
+              name="fullname"
+              placeholder="ชื่อ นามสกุล"
+              register={register}
+              className="w-60 md:w-72 h-[40px]"
+            />
+            <span className="absolute left-0 top-10">
+              <ErrorMessage>{errors.fullname?.message}</ErrorMessage>
+            </span>
+          </div>
+          <Button type="submit" primary loading={loading}>
+            <AiOutlineSearch />
+          </Button>
+        </form>
+
+        {isSubmitSuccessful &&
+          (response.length > 0 ? (
+            <>
+              <hr className="mb-5" />
+              <h1 className="text-lg">ตารางการแจ้งซ่อม</h1>
+              <Table
+                columns={columns}
+                dataSource={response}
+                scroll={{ x: 1500 }}
+              />
+            </>
+          ) : (
+            <>
+              <hr className="mb-5" />
+              <Empty />
+            </>
+          ))}
+      </div>
     </div>
   );
 };
