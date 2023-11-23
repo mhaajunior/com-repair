@@ -1,7 +1,9 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
 import { teams } from "./teams";
 import { groups } from "./groups";
 import { problems } from "./problems";
+import { users } from "./users";
 
 const prisma = new PrismaClient();
 
@@ -34,6 +36,21 @@ async function main() {
       update: {},
       create: {
         label: problem.label,
+      },
+    });
+  }
+
+  for (let user of users) {
+    const hashPassword = await bcrypt.hash(user.password, 10);
+    await prisma.user.upsert({
+      where: { email: user.email },
+      update: { role: user.role },
+      create: {
+        email: user.email,
+        password: hashPassword,
+        name: user.name,
+        surname: user.surname,
+        role: user.role,
       },
     });
   }

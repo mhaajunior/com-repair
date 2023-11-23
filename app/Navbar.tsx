@@ -3,23 +3,38 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import useClientSession from "./hooks/use-client-session";
 
 export const Navbar = () => {
   const currentPath = usePathname();
+  const session = useClientSession();
 
-  const navItems = [
+  let navItems = [
     {
       title: "ฟอร์มแจ้งซ่อม",
       link: "/new",
+      isAuthenticated: false,
     },
     {
       title: "ค้นหาใบแจ้ง",
       link: "/search",
+      isAuthenticated: false,
+    },
+    {
+      title: "เพิ่มผู้ใช้",
+      link: "/createUser",
+      isAuthenticated: true,
     },
   ];
 
+  if (session) {
+    navItems = navItems.filter((item) => item.isAuthenticated);
+  } else {
+    navItems = navItems.filter((item) => !item.isAuthenticated);
+  }
+
   return (
-    <nav className="sm:px-16 md:px-24 py-5 flex justify-between items-center text-gray-500 font-semibold">
+    <nav className="flex justify-between items-center text-gray-500 font-semibold">
       <ul className="flex items-center gap-8">
         <li>
           <Link href="/">
@@ -37,7 +52,11 @@ export const Navbar = () => {
           </li>
         ))}
       </ul>
-      <Link href="/login">เข้าสู่ระบบ</Link>
+      {session ? (
+        <Link href="/api/auth/signout?callbackUrl=/">ออกจากระบบ</Link>
+      ) : (
+        <Link href="/api/auth/signin">เข้าสู่ระบบ</Link>
+      )}
     </nav>
   );
 };

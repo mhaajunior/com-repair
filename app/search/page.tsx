@@ -100,7 +100,7 @@ const SearchIssuePage = () => {
   });
 
   return (
-    <div className="sm:px-16 md:px-24 px-8 py-5">
+    <>
       <h1 className="text-3xl">
         ค้นหาใบแจ้งซ่อมคอมพิวเตอร์ออนไลน์และอุปกรณ์ต่อพ่วง
       </h1>
@@ -157,7 +157,7 @@ const SearchIssuePage = () => {
             </>
           ))}
       </div>
-    </div>
+    </>
   );
 };
 
