@@ -1,6 +1,9 @@
 import prisma from "@/prisma/db";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
+import { Session } from "next-auth";
+import { JWT } from "next-auth/jwt";
+import { IUser } from "@/types/next-auth";
 
 export const options = {
   providers: [
@@ -27,21 +30,12 @@ export const options = {
               },
             });
 
-            if (foundUser && foundUser.password) {
-              const match = await bcrypt.compare(
-                credentials.password,
-                foundUser.password
-              );
-
-              if (match) {
-                return {
-                  id: foundUser.id,
-                  name: foundUser.name,
-                  surname: foundUser.surname,
-                  email: foundUser.email,
-                  role: foundUser.role,
-                };
-              }
+            if (
+              foundUser &&
+              (await bcrypt.compare(credentials.password, foundUser.password))
+            ) {
+              foundUser.password = "";
+              return foundUser;
             }
           } catch (error) {
             console.log(error);
@@ -51,16 +45,27 @@ export const options = {
       },
     }),
   ],
+  pages: {
+    signIn: "/signIn",
+  },
   callbacks: {
-    async jwt({ token, user }: any) {
+    async jwt({ token, user }: { token: JWT; user: IUser }): Promise<JWT> {
       if (user) {
         token.role = user.role;
+        token.surname = user.surname;
       }
       return token;
     },
-    async session({ session, token }: any) {
+    async session({
+      session,
+      token,
+    }: {
+      session: Session;
+      token: JWT;
+    }): Promise<Session> {
       if (session?.user) {
         session.user.role = token.role;
+        session.user.surname = token.surname;
       }
       return session;
     },
