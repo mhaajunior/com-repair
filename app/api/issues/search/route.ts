@@ -2,6 +2,9 @@ import { searchIssueSchema } from "@/types/validationSchemas";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/db";
 import { Prisma } from "@prisma/client";
+import moment from "moment";
+import { Issue } from "@/types/outputProps";
+import { statusMap } from "@/helpers/statusMap";
 
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
@@ -47,9 +50,48 @@ export const POST = async (req: NextRequest) => {
   try {
     const res = await prisma.issue.findMany({
       where: whereObj,
+      orderBy: [
+        {
+          createdAt: "desc",
+        },
+      ],
+      include: {
+        team: {
+          select: {
+            abb: true,
+          },
+        },
+        group: {
+          select: {
+            label: true,
+          },
+        },
+        problem: {
+          select: {
+            label: true,
+          },
+        },
+      },
     });
 
-    return NextResponse.json(res);
+    const issues: Issue[] = [];
+
+    res.forEach((issue, index) =>
+      issues.push({
+        key: index + 1,
+        id: issue.id,
+        sender: issue.name + " " + issue.surname,
+        status: statusMap[issue.status],
+        detail: issue.detail,
+        fixResult: issue.fixResult,
+        createdAt: moment(issue.createdAt).format("YYYY-MM-DD HH:mm:ss"),
+        workGroup: issue.group.label + " " + issue.team.abb,
+        problem: issue.problem.label,
+        officer: null,
+      })
+    );
+
+    return NextResponse.json(issues);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       console.log(e);

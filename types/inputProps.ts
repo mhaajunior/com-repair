@@ -1,8 +1,3 @@
-export interface OptionProps {
-  name: string;
-  id: number;
-}
-
 export interface SelectOption {
   label: string;
   value: number;
