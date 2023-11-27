@@ -41,3 +41,8 @@ export const searchIssueSchema = z.object({
     .max(64, "ชื่อ-นามสกุลที่กรอกยาวเกินกว่าที่กำหนด")
     .optional(),
 });
+
+export const signInSchema = z.object({
+  email: z.string().min(1, "กรุณากรอกอีเมล"),
+  password: z.string().min(1, "กรุณากรอกรหัสผ่าน"),
+});

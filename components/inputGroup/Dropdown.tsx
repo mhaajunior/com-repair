@@ -2,18 +2,21 @@ import { SelectOption } from "@/types/inputProps";
 import { Controller } from "react-hook-form";
 import Select from "react-select";
 import "@/styles/Dropdown.css";
+import ErrorMessage from "../ErrorMessage";
 
 const Dropdown = ({
   name,
   placeholder,
   options,
   isControl = true,
+  errors,
   ...rest
 }: {
   name: string;
   placeholder: string;
   options: SelectOption[];
   isControl?: boolean;
+  errors: any;
   [rest: string]: any;
 }) => {
   const getValue = (value: number) => {
@@ -29,7 +32,7 @@ const Dropdown = ({
   };
 
   return (
-    <>
+    <div className={rest.className ? rest.className : ""}>
       {isControl && (
         <Controller
           control={rest.control}
@@ -46,7 +49,6 @@ const Dropdown = ({
               value={getValue(value)}
               classNamePrefix="dropdown"
               placeholder={placeholder}
-              className={rest.className ? rest.className : ""}
             />
           )}
         />
@@ -60,10 +62,10 @@ const Dropdown = ({
           name={name}
           classNamePrefix="dropdown"
           placeholder={placeholder}
-          className={rest.className ? rest.className : ""}
         />
       )}
-    </>
+      <ErrorMessage>{errors?.message}</ErrorMessage>
+    </div>
   );
 };
 

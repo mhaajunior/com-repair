@@ -14,7 +14,6 @@ import InputWrap from "@/components/inputGroup/InputWrap";
 import Input from "@/components/inputGroup/Input";
 import Dropdown from "@/components/inputGroup/Dropdown";
 import Button from "@/components/Button";
-import ErrorMessage from "@/components/ErrorMessage";
 import { errorHandler } from "@/helpers/errorHandler";
 
 type IssueForm = z.infer<typeof createIssueSchema>;
@@ -77,7 +76,7 @@ const NewIssuePage = () => {
   });
 
   return (
-    <div className="sm:px-16 md:px-24 px-8 py-5">
+    <>
       <h1 className="text-3xl">
         แบบฟอร์มการแจ้งซ่อมคอมพิวเตอร์ออนไลน์และอุปกรณ์ต่อพ่วง
       </h1>
@@ -87,18 +86,18 @@ const NewIssuePage = () => {
             name="name"
             placeholder="ชื่อ"
             register={register}
+            errors={errors.name}
             className="w-60 md:w-72"
           />
-          <ErrorMessage>{errors.name?.message}</ErrorMessage>
         </InputWrap>
         <InputWrap label="นามสกุล" isValid={!errors.surname} required>
           <Input
             name="surname"
             placeholder="นามสกุล"
             register={register}
+            errors={errors.surname}
             className="w-60 md:w-72"
           />
-          <ErrorMessage>{errors.surname?.message}</ErrorMessage>
         </InputWrap>
         <InputWrap label="ศูนย์/สำนัก/กอง" isValid={!errors.team} required>
           <Dropdown
@@ -107,8 +106,8 @@ const NewIssuePage = () => {
             options={teams}
             className="w-60 md:w-72"
             control={control}
+            errors={errors.team}
           />
-          <ErrorMessage>{errors.team?.message}</ErrorMessage>
         </InputWrap>
         <InputWrap label="กลุ่มงาน" isValid={!errors.group} required>
           <Dropdown
@@ -117,8 +116,8 @@ const NewIssuePage = () => {
             options={filteredGroups}
             className="w-60 md:w-72"
             control={control}
+            errors={errors.group}
           />
-          <ErrorMessage>{errors.group?.message}</ErrorMessage>
         </InputWrap>
         <InputWrap label="เบอร์โทรศัพท์" isValid={!errors.phone} required>
           <Input
@@ -128,9 +127,9 @@ const NewIssuePage = () => {
             pattern="\d*"
             maxlength="10"
             register={register}
+            errors={errors.phone}
             className="w-60 md:w-72"
           />
-          <ErrorMessage>{errors.phone?.message}</ErrorMessage>
         </InputWrap>
         <InputWrap label="ประเภทของปัญหา" isValid={!errors.problem} required>
           <Dropdown
@@ -139,8 +138,8 @@ const NewIssuePage = () => {
             options={problems}
             className="w-60 md:w-72"
             control={control}
+            errors={errors.problem}
           />
-          <ErrorMessage>{errors.problem?.message}</ErrorMessage>
         </InputWrap>
         <InputWrap
           label="รายละเอียดอาการเสีย/ปัญหา"
@@ -151,10 +150,10 @@ const NewIssuePage = () => {
             name="detail"
             placeholder="เขียนรายละเอียดอาการเสีย/ปัญหา"
             register={register}
+            errors={errors.detail}
             className="w-60 md:w-72"
             textarea
           />
-          <ErrorMessage>{errors.detail?.message}</ErrorMessage>
         </InputWrap>
         {/* เพิ่ม field รูปภาพ */}
         <div className="w-full">
@@ -168,7 +167,7 @@ const NewIssuePage = () => {
           </Button>
         </div>
       </form>
-    </div>
+    </>
   );
 };
 

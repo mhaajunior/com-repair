@@ -22,6 +22,8 @@ model Issue {
   problemId Int
   problem Problem @relation(fields: [problemId], references: [id])
   detail String @db.Text
+  officerId String?
+  officer User? @relation(fields: [officerId], references: [id])
 
   fixResult String? @db.Text
   status Status @default(OPEN)
@@ -29,16 +31,6 @@ model Issue {
   createdAt DateTime @default(now())
   fixStartDate DateTime?
   fixEndDate DateTime?
-}
-
-enum Status {
-  OPEN
-  ACKNOWLEDGE
-  IN_PROGRESS
-  NOTIFY
-  CANT_FIX
-  CANCELED
-  CLOSED
 }
 
 model Team {
@@ -69,5 +61,31 @@ model Problem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   issue Issue[]
+}
+
+model User {
+  id String @id @default(cuid())
+  email String @unique
+  password String
+  name String
+  surname String
+  createdAt DateTime @default(now())
+  issue Issue[]
+  role Role @default(OFFICER)
+}
+
+enum Status {
+  OPEN
+  ACKNOWLEDGE
+  IN_PROGRESS
+  NOTIFY
+  CANT_FIX
+  CANCELED
+  CLOSED
+}
+
+enum Role {
+  ADMIN
+  OFFICER
 }
 

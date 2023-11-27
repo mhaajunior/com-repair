@@ -131,45 +131,38 @@ const SearchIssuePage = () => {
   };
 
   return (
-    <div className="sm:px-16 md:px-24 px-8 py-5">
+    <>
       <h1 className="text-3xl">
         ค้นหาใบแจ้งซ่อมคอมพิวเตอร์ออนไลน์และอุปกรณ์ต่อพ่วง
       </h1>
       <div className="card ">
         <form
           onSubmit={onSubmit}
-          className="flex flex-wrap gap-x-5 items-center mb-2"
+          className="flex flex-wrap gap-x-5 gap-y-5 items-start mb-2"
         >
-          <div className="w-full">
-            <ErrorMessage>{error}</ErrorMessage>
-          </div>
-          <div className="relative">
-            <Input
-              name="id"
-              placeholder="เลขที่ใบแจ้ง"
-              register={register}
-              className="w-60 md:w-72 h-[40px]"
-            />
-            <span className="absolute left-0 top-10">
-              <ErrorMessage>{errors.id?.message}</ErrorMessage>
-            </span>
-          </div>
-          <div className="relative">
-            <Input
-              name="fullname"
-              placeholder="ชื่อ นามสกุล"
-              register={register}
-              className="w-60 md:w-72 h-[40px]"
-            />
-            <span className="absolute left-0 top-10">
-              <ErrorMessage>{errors.fullname?.message}</ErrorMessage>
-            </span>
-          </div>
-          <Button type="submit" primary loading={loading}>
+          <Input
+            name="id"
+            placeholder="หมายเลขใบแจ้ง"
+            register={register}
+            errors={errors.id}
+            className="w-60 md:w-72"
+          />
+          <Input
+            name="fullname"
+            placeholder="ชื่อ นามสกุล"
+            register={register}
+            errors={errors.fullname}
+            className="w-60 md:w-72"
+          />
+          <Button
+            type="submit"
+            primary
+            loading={loading}
+            className="!m-0 h-[45px]"
+          >
             <AiOutlineSearch />
           </Button>
         </form>
-
         {isSubmitSuccessful &&
           (response.length > 0 ? (
             <>
@@ -189,7 +182,7 @@ const SearchIssuePage = () => {
             </>
           ))}
       </div>
-    </div>
+    </>
   );
 };
 
