@@ -6,70 +6,23 @@ import axios from "axios";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AiOutlineSearch } from "react-icons/ai";
-import { Empty, Space, Table, Tag } from "antd";
-import type { ColumnsType } from "antd/es/table";
+import { Empty, Table, Tag } from "antd";
+import type { ColumnsType, TableProps } from "antd/es/table";
 
 import Input from "@/components/inputGroup/Input";
 import Button from "@/components/Button";
 import { searchIssueSchema } from "@/types/validationSchemas";
 import ErrorMessage from "@/components/ErrorMessage";
 import { errorHandler } from "@/helpers/errorHandler";
-import { IssueType } from "@/types/outputProps";
-
-const columns: ColumnsType<IssueType> = [
-  {
-    title: "เลขที่ใบแจ้ง",
-    dataIndex: "id",
-    key: "id",
-  },
-  {
-    title: "ผู้แจ้ง",
-    dataIndex: "fullname",
-    key: "fullname",
-  },
-  {
-    title: "กลุ่มงาน",
-    dataIndex: "group",
-    key: "group",
-  },
-  {
-    title: "วันที่แจ้ง",
-    dataIndex: "createdAt",
-    key: "createdAt",
-  },
-  {
-    title: "ประเภทของปัญหา",
-    dataIndex: "problem",
-    key: "problem",
-  },
-  {
-    title: "อาการเสีย/ปัญหา",
-    dataIndex: "detail",
-    key: "detail",
-  },
-  {
-    title: "Tags",
-    dataIndex: "status",
-    key: "status",
-  },
-  {
-    title: "ผู้รับงาน",
-    dataIndex: "officer",
-    key: "officer",
-  },
-  {
-    title: "สรุปผลการซ่อม",
-    dataIndex: "fixResult",
-    key: "fixResult",
-  },
-];
+import { Issue, StatusMap } from "@/types/outputProps";
+import { statusMap } from "@/helpers/statusMap";
 
 type SearchForm = z.infer<typeof searchIssueSchema>;
 
 const SearchIssuePage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [response, setResponse] = useState<IssueType[]>([]);
+  const [response, setResponse] = useState<Issue[]>([]);
   const {
     register,
     handleSubmit,
@@ -99,6 +52,84 @@ const SearchIssuePage = () => {
     }
   });
 
+  const filters: { text: string; value: string }[] = [];
+  for (const [key, value] of Object.entries(statusMap)) {
+    filters.push({ text: value.label, value: value.value });
+  }
+
+  const columns: ColumnsType<Issue> = [
+    {
+      title: "ลำดับ",
+      dataIndex: "key",
+      key: "key",
+      sorter: (a, b) => a.key - b.key,
+    },
+    {
+      title: "เลขที่ใบแจ้ง",
+      dataIndex: "id",
+      key: "id",
+    },
+    {
+      title: "ผู้แจ้ง",
+      dataIndex: "sender",
+      key: "sender",
+    },
+    {
+      title: "กลุ่มงาน",
+      dataIndex: "workGroup",
+      key: "workGroup",
+    },
+    {
+      title: "วันที่แจ้ง",
+      dataIndex: "createdAt",
+      key: "createdAt",
+    },
+    {
+      title: "ประเภทของปัญหา",
+      dataIndex: "problem",
+      key: "problem",
+    },
+    {
+      title: "อาการเสีย/ปัญหา",
+      dataIndex: "detail",
+      key: "detail",
+      width: "15%",
+    },
+    {
+      title: "สถานะ",
+      dataIndex: "status",
+      key: "status",
+      render: (obj: StatusMap) => (
+        <Tag color={obj.color} key={obj.value}>
+          {obj.label}
+        </Tag>
+      ),
+      filters: filters,
+      filterSearch: true,
+      onFilter: (value: any, record: Issue) => record.status.value === value,
+    },
+    {
+      title: "ผู้รับงาน",
+      dataIndex: "officer",
+      key: "officer",
+    },
+    {
+      title: "สรุปผลการซ่อม",
+      dataIndex: "fixResult",
+      key: "fixResult",
+      width: "15%",
+    },
+  ];
+
+  const onChange: TableProps<Issue>["onChange"] = (
+    pagination,
+    filters,
+    sorter,
+    extra
+  ) => {
+    console.log("params", pagination, filters, sorter, extra);
+  };
+
   return (
     <div className="sm:px-16 md:px-24 px-8 py-5">
       <h1 className="text-3xl">
@@ -115,7 +146,7 @@ const SearchIssuePage = () => {
           <div className="relative">
             <Input
               name="id"
-              placeholder="หมายเลขใบแจ้ง"
+              placeholder="เลขที่ใบแจ้ง"
               register={register}
               className="w-60 md:w-72 h-[40px]"
             />
@@ -147,7 +178,8 @@ const SearchIssuePage = () => {
               <Table
                 columns={columns}
                 dataSource={response}
-                scroll={{ x: 1500 }}
+                onChange={onChange}
+                scroll={{ x: 1900 }}
               />
             </>
           ) : (

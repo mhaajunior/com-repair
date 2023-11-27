@@ -1,25 +1,18 @@
-export interface IssueType {
+export interface Issue {
+  key: number;
   id: number;
-  name: string;
-  surname: string;
-  team: number;
-  group: number;
-  phone: string;
-  problem: number;
+  sender: string;
+  workGroup: string;
+  problem: string;
   detail: string;
-  fixResult?: string;
-  status: Status;
-  createdAt: Date;
-  fixStartDate?: Date;
-  fixEndDate?: Date;
+  fixResult: string | null;
+  status: StatusMap;
+  createdAt: string;
+  officer: string | null;
 }
 
-enum Status {
-  OPEN,
-  ACKNOWLEDGE,
-  IN_PROGRESS,
-  NOTIFY,
-  CANT_FIX,
-  CANCELED,
-  CLOSED,
+export interface StatusMap {
+  value: string;
+  label: string;
+  color: string;
 }
