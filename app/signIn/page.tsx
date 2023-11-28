@@ -10,8 +10,7 @@ import { z } from "zod";
 import { BsChevronLeft } from "react-icons/bs";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
-import { Alert } from "antd";
+import { useEffect, useState } from "react";
 import useClientSession from "@/hooks/use-client-session";
 import { useRouter } from "next/navigation";
 
@@ -24,9 +23,6 @@ type Props = {
 const SignInPage = (props: Props) => {
   const session = useClientSession();
   const router = useRouter();
-  if (session) {
-    router.push("/");
-  }
   const [loading, setLoading] = useState(false);
   const {
     register,
@@ -35,6 +31,12 @@ const SignInPage = (props: Props) => {
   } = useForm<SignInForm>({
     resolver: zodResolver(signInSchema),
   });
+
+  useEffect(() => {
+    if (session) {
+      router.push("/");
+    }
+  }, [session, router]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -56,7 +58,7 @@ const SignInPage = (props: Props) => {
         className="card flex flex-col gap-8 items-center relative !px-16"
         onSubmit={onSubmit}
       >
-        <Link href="/" className="absolute right-5 top-5 text-gray-400 z-10">
+        <Link href="/" className="absolute left-5 top-5 text-gray-400 z-10">
           <span className="flex cursor-pointer hover:text-black items-center">
             <BsChevronLeft className="mr-1" />
             กลับ

@@ -1,4 +1,4 @@
-import { SelectOption } from "@/types/inputProps";
+import { SelectOption } from "@/types/selectOption";
 import { Controller } from "react-hook-form";
 import Select from "react-select";
 import "@/styles/Dropdown.css";

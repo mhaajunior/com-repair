@@ -5,14 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import useClientSession from "../hooks/use-client-session";
 import { FaSignOutAlt } from "react-icons/fa";
+import { Role } from "@prisma/client";
 
 export const Navbar = () => {
   const currentPath = usePathname();
   const session = useClientSession();
-
-  if (currentPath.startsWith("/sign")) {
-    console.log("hi");
-  }
 
   let navItems = [
     {
@@ -26,14 +23,24 @@ export const Navbar = () => {
       isAuthenticated: false,
     },
     {
+      title: "ตารางแสดงใบแจ้ง",
+      link: "/list",
+      isAuthenticated: true,
+      isAdmin: false,
+    },
+    {
       title: "เพิ่มผู้ใช้",
       link: "/createUser",
       isAuthenticated: true,
+      isAdmin: true,
     },
   ];
 
   if (session) {
     navItems = navItems.filter((item) => item.isAuthenticated);
+    if (session.user.role !== Role.ADMIN) {
+      navItems = navItems.filter((item) => !item.isAdmin);
+    }
   } else {
     navItems = navItems.filter((item) => !item.isAuthenticated);
   }

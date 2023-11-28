@@ -16,3 +16,20 @@ export interface StatusMap {
   label: string;
   color: string;
 }
+
+export interface SearchIssueParams {
+  id?: number;
+  fullname?: string;
+  userId?: string;
+}
+
+export interface CountIssue {
+  ALL: number;
+  OPEN?: number;
+  ACKNOWLEDGE?: number;
+  IN_PROGRESS?: number;
+  NOTIFY?: number;
+  CANT_FIX?: number;
+  CANCELED?: number;
+  CLOSED?: number;
+}

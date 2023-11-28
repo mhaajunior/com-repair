@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { createIssueSchema } from "@/types/validationSchemas";
-import { SelectOption, SelectOptionWithTeam } from "@/types/inputProps";
+import { SelectOption, SelectOptionWithTeam } from "@/types/selectOption";
 import InputWrap from "@/components/inputGroup/InputWrap";
 import Input from "@/components/inputGroup/Input";
 import Dropdown from "@/components/inputGroup/Dropdown";

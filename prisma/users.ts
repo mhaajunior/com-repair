@@ -8,4 +8,10 @@ export const users = [
     surname: "วระโพธิ์",
     role: Role.ADMIN,
   },
+  {
+    email: "officer@test.com",
+    password: "Officer@test",
+    name: "เจ้าหน้าที่",
+    surname: "ทดสอบ",
+  },
 ];

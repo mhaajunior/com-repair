@@ -12,16 +12,15 @@ import type { ColumnsType, TableProps } from "antd/es/table";
 import Input from "@/components/inputGroup/Input";
 import Button from "@/components/Button";
 import { searchIssueSchema } from "@/types/validationSchemas";
-import ErrorMessage from "@/components/ErrorMessage";
 import { errorHandler } from "@/helpers/errorHandler";
-import { Issue, StatusMap } from "@/types/outputProps";
+import { Issue, StatusMap } from "@/types/issue";
 import { statusMap } from "@/helpers/statusMap";
+import { ifNull } from "@/helpers/common";
 
 type SearchForm = z.infer<typeof searchIssueSchema>;
 
 const SearchIssuePage = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [response, setResponse] = useState<Issue[]>([]);
   const {
     register,
@@ -35,11 +34,9 @@ const SearchIssuePage = () => {
     const fullname = data.fullname?.trim();
     try {
       if (!data.id && !fullname) {
-        setError("กรุณากรอกข้อมูลที่จะค้นหาอย่างน้อย 1 ช่อง");
         return;
       }
       setLoading(true);
-      setError("");
       const res = await axios.post("/api/issues/search", data);
 
       if (res.status === 200) {
@@ -62,7 +59,6 @@ const SearchIssuePage = () => {
       title: "ลำดับ",
       dataIndex: "key",
       key: "key",
-      sorter: (a, b) => a.key - b.key,
     },
     {
       title: "เลขที่ใบแจ้ง",
@@ -78,6 +74,7 @@ const SearchIssuePage = () => {
       title: "กลุ่มงาน",
       dataIndex: "workGroup",
       key: "workGroup",
+      width: "15%",
     },
     {
       title: "วันที่แจ้ง",
@@ -96,6 +93,19 @@ const SearchIssuePage = () => {
       width: "15%",
     },
     {
+      title: "ผู้รับงาน",
+      dataIndex: "officer",
+      key: "officer",
+      render: (str) => ifNull(str),
+    },
+    {
+      title: "สรุปผลการซ่อม",
+      dataIndex: "fixResult",
+      key: "fixResult",
+      width: "15%",
+      render: (str) => ifNull(str),
+    },
+    {
       title: "สถานะ",
       dataIndex: "status",
       key: "status",
@@ -104,20 +114,10 @@ const SearchIssuePage = () => {
           {obj.label}
         </Tag>
       ),
+      fixed: "right",
       filters: filters,
       filterSearch: true,
       onFilter: (value: any, record: Issue) => record.status.value === value,
-    },
-    {
-      title: "ผู้รับงาน",
-      dataIndex: "officer",
-      key: "officer",
-    },
-    {
-      title: "สรุปผลการซ่อม",
-      dataIndex: "fixResult",
-      key: "fixResult",
-      width: "15%",
     },
   ];
 
@@ -127,7 +127,7 @@ const SearchIssuePage = () => {
     sorter,
     extra
   ) => {
-    console.log("params", pagination, filters, sorter, extra);
+    // console.log("params", pagination, filters, sorter, extra);
   };
 
   return (
@@ -166,7 +166,7 @@ const SearchIssuePage = () => {
         {isSubmitSuccessful &&
           (response.length > 0 ? (
             <>
-              <hr className="mb-5" />
+              <hr className="my-5" />
               <h1 className="text-lg">ตารางการแจ้งซ่อม</h1>
               <Table
                 columns={columns}
@@ -177,7 +177,7 @@ const SearchIssuePage = () => {
             </>
           ) : (
             <>
-              <hr className="mb-5" />
+              <hr className="my-5" />
               <Empty />
             </>
           ))}

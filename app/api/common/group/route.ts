@@ -1,6 +1,6 @@
 import prisma from "@/prisma/db";
 import { Prisma } from "@prisma/client";
-import { SelectOptionWithTeam } from "@/types/inputProps";
+import { SelectOptionWithTeam } from "@/types/selectOption";
 
 export const getGroups = async () => {
   try {

@@ -51,6 +51,7 @@ export const options = {
   callbacks: {
     async jwt({ token, user }: { token: JWT; user: IUser }): Promise<JWT> {
       if (user) {
+        token.id = user.id;
         token.role = user.role;
         token.surname = user.surname;
       }
@@ -64,6 +65,7 @@ export const options = {
       token: JWT;
     }): Promise<Session> {
       if (session?.user) {
+        session.user.id = token.id;
         session.user.role = token.role;
         session.user.surname = token.surname;
       }
