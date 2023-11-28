@@ -5,7 +5,7 @@ import { Prisma } from "@prisma/client";
 import moment from "moment";
 import { Issue, SearchIssueParams } from "@/types/issue";
 import { statusMap } from "@/helpers/statusMap";
-import { validateUser } from "../../common/common";
+import { validateUser } from "../../common/middleware";
 import { getQuarterDate } from "@/helpers/date";
 
 export const POST = async (req: NextRequest) => {
@@ -158,8 +158,8 @@ const officerFetchIssues = async (body: SearchIssueParams, userId: string) => {
   }
 
   try {
-    if (!(await validateUser(userId))) {
-      return NextResponse.json("ผู้ใช้งานไม่ถูกต้อง", { status: 400 });
+    if (!validateUser(userId)) {
+      return NextResponse.json({ status: 401 });
     }
 
     const res = await prisma.issue.findMany({

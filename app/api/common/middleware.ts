@@ -1,6 +1,8 @@
 import prisma from "@/prisma/db";
 
-export const validateUser = async (userId: string) => {
+export const validateUser = async (userId: string | null) => {
+  if (!userId) return false;
+
   try {
     const user = await prisma.user.findUnique({
       where: {

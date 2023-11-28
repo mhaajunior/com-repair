@@ -4,7 +4,7 @@ import prisma from "@/prisma/db";
 import { Prisma } from "@prisma/client";
 import { CountIssue } from "@/types/issue";
 import { getQuarterDate } from "@/helpers/date";
-import { validateUser } from "../common/common";
+import { validateUser } from "../common/middleware";
 
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
@@ -50,8 +50,8 @@ export const GET = async (req: NextRequest) => {
   const userId = req.headers.get("user-id");
 
   try {
-    if (userId && !(await validateUser(userId))) {
-      return NextResponse.json("ผู้ใช้งานไม่ถูกต้อง", { status: 400 });
+    if (!validateUser(userId)) {
+      return NextResponse.json({ status: 401 });
     }
 
     const countIssues: CountIssue = { ALL: 0 };
