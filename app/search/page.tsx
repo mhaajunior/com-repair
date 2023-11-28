@@ -59,6 +59,7 @@ const SearchIssuePage = () => {
       title: "ลำดับ",
       dataIndex: "key",
       key: "key",
+      sorter: (a, b) => a.key - b.key,
     },
     {
       title: "เลขที่ใบแจ้ง",
@@ -173,6 +174,7 @@ const SearchIssuePage = () => {
                 dataSource={response}
                 onChange={onChange}
                 scroll={{ x: 1900 }}
+                showSorterTooltip={false}
               />
             </>
           ) : (

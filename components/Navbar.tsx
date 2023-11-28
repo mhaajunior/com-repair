@@ -6,8 +6,9 @@ import { usePathname } from "next/navigation";
 import useClientSession from "../hooks/use-client-session";
 import { FaSignOutAlt } from "react-icons/fa";
 import { Role } from "@prisma/client";
+import Button from "./Button";
 
-export const Navbar = () => {
+const Navbar = () => {
   const currentPath = usePathname();
   const session = useClientSession();
 
@@ -56,7 +57,7 @@ export const Navbar = () => {
               </Link>
             </li>
             {navItems.map((item) => (
-              <li key={item.title}>
+              <li key={item.title} className="hover:text-black">
                 <Link
                   href={item.link}
                   className={item.link === currentPath ? "text-gray-900" : ""}
@@ -69,17 +70,21 @@ export const Navbar = () => {
           {session ? (
             <ul className="flex items-center gap-8">
               <li>{session.user.name + " " + session.user.surname}</li>
-              <li>
+              <li className="hover:text-black">
                 <Link href="/api/auth/signout?callbackUrl=/">
                   <FaSignOutAlt className="text-xl" />
                 </Link>
               </li>
             </ul>
           ) : (
-            <Link href="/api/auth/signin">เข้าสู่ระบบ</Link>
+            <Button primary className="!shadow-none">
+              <Link href="/api/auth/signin">เข้าสู่ระบบ</Link>
+            </Button>
           )}
         </nav>
       )}
     </>
   );
 };
+
+export default Navbar;

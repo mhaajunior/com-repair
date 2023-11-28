@@ -19,7 +19,7 @@ const Badge = ({
   };
   const classes = classNames(
     rest.className,
-    "text-center relative p-2 text-sm text-white rounded-t-xl hover:cursor-pointer hover:opacity-50 w-[80px] whitespace-nowrap overflow-hidden text-ellipsis",
+    "text-center relative p-2 text-sm text-white rounded-t-xl hover:cursor-pointer hover:opacity-50 w-[100px] whitespace-nowrap overflow-hidden text-ellipsis",
     {
       "border-t-[5px] border-gray-400": active,
     }

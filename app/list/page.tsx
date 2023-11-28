@@ -11,7 +11,6 @@ import { ColumnsType, TableProps } from "antd/es/table";
 import { statusMap } from "@/helpers/statusMap";
 import { FaPencilAlt, FaClipboardList, FaTrash } from "react-icons/fa";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import Input from "@/components/inputGroup/Input";
 import { AiOutlineSearch } from "react-icons/ai";
 import Button from "@/components/Button";
@@ -31,7 +30,6 @@ const ListPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const session = useClientSession();
-  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -122,6 +120,7 @@ const ListPage = () => {
       dataIndex: "key",
       key: "key",
       width: "8%",
+      sorter: (a, b) => a.key - b.key,
     },
     {
       title: "เลขที่ใบแจ้ง",
@@ -238,7 +237,7 @@ const ListPage = () => {
               <div className="flex flex-wrap">
                 <Badge
                   key="all"
-                  color="burlyWood"
+                  color="Black"
                   onClick={() => setStatus(null)}
                   active={!status}
                   count={countIssues["ALL"]}
@@ -262,19 +261,12 @@ const ListPage = () => {
                 ))}
               </div>
               <Table
-                onRow={(record, rowIndex) => {
-                  return {
-                    onClick: (event) => {
-                      router.push(`/edit/${record.id}`);
-                    },
-                  };
-                }}
-                rowClassName="cursor-pointer"
                 columns={columns}
                 dataSource={filteredRow}
                 onChange={onChange}
                 scroll={{ x: 1500 }}
                 className="relative"
+                showSorterTooltip={false}
               />
             </div>
           )}

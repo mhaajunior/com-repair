@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Sarabun } from "next/font/google";
 import "./globals.css";
-import Footer from "./Footer";
-import { Navbar } from "./Navbar";
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 import { Toaster } from "sonner";
 import AuthProvider from "@/components/AuthProvider";
 
