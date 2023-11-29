@@ -40,6 +40,7 @@ export const searchIssueSchema = z.object({
     .string()
     .max(64, "ชื่อ-นามสกุลที่กรอกยาวเกินกว่าที่กำหนด")
     .optional(),
+  rangeDate: z.any().optional(),
 });
 
 export const signInSchema = z.object({

@@ -12,8 +12,8 @@ import type { ColumnsType, TableProps } from "antd/es/table";
 import Input from "@/components/inputGroup/Input";
 import Button from "@/components/Button";
 import { searchIssueSchema } from "@/types/validationSchemas";
-import { errorHandler } from "@/helpers/errorHandler";
 import { Issue, StatusMap } from "@/types/issue";
+import { errorHandler } from "@/helpers/errorHandler";
 import { statusMap } from "@/helpers/statusMap";
 import { ifNull } from "@/helpers/common";
 

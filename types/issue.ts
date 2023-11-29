@@ -4,6 +4,7 @@ export interface Issue {
   sender: string;
   workGroup: string;
   problem: string;
+  phone: string;
   detail: string;
   fixResult: string | null;
   status: StatusMap;
@@ -21,6 +22,7 @@ export interface SearchIssueParams {
   id?: number;
   fullname?: string;
   userId?: string;
+  rangeDate?: any;
 }
 
 export interface CountIssue {

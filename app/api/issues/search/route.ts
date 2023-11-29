@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/db";
 import { Prisma } from "@prisma/client";
 import moment from "moment";
-import { Issue, SearchIssueParams } from "@/types/issue";
+import { CountIssue, Issue, SearchIssueParams } from "@/types/issue";
 import { statusMap } from "@/helpers/statusMap";
 import { validateUser } from "../../common/middleware";
 import { getQuarterDate } from "@/helpers/date";
@@ -95,6 +95,7 @@ const userFetchIssues = async (body: SearchIssueParams) => {
         id: issue.id,
         sender: issue.name + " " + issue.surname,
         status: statusMap[issue.status],
+        phone: issue.phone,
         detail: issue.detail,
         fixResult: issue.fixResult,
         createdAt: moment(issue.createdAt).format("YYYY-MM-DD HH:mm:ss"),
@@ -115,10 +116,12 @@ const userFetchIssues = async (body: SearchIssueParams) => {
 
 const officerFetchIssues = async (body: SearchIssueParams, userId: string) => {
   const validation = searchIssueSchema.safeParse(body);
-  const { id, fullname } = body;
+  const { id, fullname, rangeDate } = body;
   let trimFullname = "";
   let name = "";
   let surname = "";
+  let startDate = "";
+  let endDate = "";
 
   if (fullname) trimFullname = fullname?.trim();
 
@@ -135,12 +138,22 @@ const officerFetchIssues = async (body: SearchIssueParams, userId: string) => {
     }
   }
 
+  if (rangeDate) {
+    startDate = moment(rangeDate[0]).format("YYYY-MM-DD 00:00:00");
+    endDate = moment(rangeDate[1]).format("YYYY-MM-DD 23:59:59");
+    startDate = new Date(startDate).toISOString();
+    endDate = new Date(endDate).toISOString();
+  } else {
+    const dateObj = getQuarterDate();
+    startDate = new Date(dateObj.startDate).toISOString();
+    endDate = new Date(dateObj.endDate).toISOString();
+  }
+
   let whereObj: any = {};
-  const dateObj = getQuarterDate();
 
   whereObj.createdAt = {
-    gte: new Date(dateObj.startDate).toISOString(),
-    lte: new Date(dateObj.endDate).toISOString(),
+    gte: startDate,
+    lte: endDate,
   };
 
   if (id) {
@@ -196,6 +209,7 @@ const officerFetchIssues = async (body: SearchIssueParams, userId: string) => {
         id: issue.id,
         sender: issue.name + " " + issue.surname,
         status: statusMap[issue.status],
+        phone: issue.phone,
         detail: issue.detail,
         fixResult: issue.fixResult,
         createdAt: moment(issue.createdAt).format("YYYY-MM-DD HH:mm:ss"),
@@ -205,7 +219,21 @@ const officerFetchIssues = async (body: SearchIssueParams, userId: string) => {
       })
     );
 
-    return NextResponse.json(issues);
+    const countIssues: CountIssue = { ALL: 0 };
+    let total = 0;
+    const groupIssues = await prisma.issue.groupBy({
+      by: ["status"],
+      where: whereObj,
+      _count: true,
+    });
+
+    for (let issue of groupIssues) {
+      countIssues[issue.status] = issue._count;
+      total += issue._count;
+    }
+    countIssues["ALL"] = total;
+
+    return NextResponse.json({ issues, countIssues });
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       console.log(e);
