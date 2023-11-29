@@ -5,6 +5,7 @@ import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { Toaster } from "sonner";
 import AuthProvider from "@/components/AuthProvider";
+import { ConfigProvider } from "antd";
 
 const sarabun = Sarabun({
   subsets: ["thai"],
@@ -26,14 +27,22 @@ export default async function RootLayout({
       <body
         className={`${sarabun.className} min-h-screen flex flex-col max-w-[1300px] mx-auto text-gray-500`}
       >
-        <AuthProvider>
-          <Toaster richColors={true} position="top-right" />
-          <div className="sm:px-16 md:px-24 px-8 py-5">
-            <Navbar />
-            <div className="pt-8">{children}</div>
-          </div>
-          <Footer />
-        </AuthProvider>
+        <ConfigProvider
+          theme={{
+            token: {
+              fontFamily: sarabun.style.fontFamily,
+            },
+          }}
+        >
+          <AuthProvider>
+            <Toaster richColors={true} position="top-right" />
+            <div className="sm:px-16 md:px-24 px-8 py-5">
+              <Navbar />
+              <div className="pt-8">{children}</div>
+            </div>
+            <Footer />
+          </AuthProvider>
+        </ConfigProvider>
       </body>
     </html>
   );

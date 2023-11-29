@@ -24,7 +24,6 @@ import Badge from "@/components/Badge";
 import Button from "@/components/Button";
 import Input from "@/components/inputGroup/Input";
 import RangePicker from "@/components/inputGroup/RangePicker";
-import { Sarabun } from "next/font/google";
 
 type SearchForm = z.infer<typeof searchIssueSchema>;
 
@@ -302,43 +301,58 @@ const ListPage = () => {
         okButtonProps={{ style: { display: "none" } }}
         cancelButtonProps={{ style: { display: "none" } }}
       >
-        <div className="text-gray-600 text-base sarabun leading-8">
-          <p className="flex justify-between">
-            <span className="">วันเวลาที่แจ้ง:</span>
+        <div className="text-gray-600 text-base leading-9">
+          <p className="flex">
+            <span className="w-2/6">เลขที่ใบแจ้ง</span>
+            {selectedIssue?.id}
+          </p>
+          <p className="flex">
+            <span className="w-2/6">วันเวลาที่แจ้ง</span>
             {selectedIssue?.createdAt}
           </p>
-          <p className="flex justify-between">
-            <span className="">ผู้แจ้ง:</span> {selectedIssue?.sender}
+          <hr />
+          <p className="flex">
+            <span className="w-2/6">ผู้แจ้ง</span>
+            {selectedIssue?.sender}
           </p>
-          <p className="flex justify-between">
-            <span className="">หน่วยงาน:</span>
+          <hr />
+          <p className="flex">
+            <span className="w-2/6">หน่วยงาน</span>
             {selectedIssue?.workGroup}
           </p>
-          <p className="flex justify-between">
-            <span className="">เบอร์โทร:</span>
+          <hr />
+          <p className="flex">
+            <span className="w-2/6">เบอร์โทร</span>
             {selectedIssue?.phone}
           </p>
-          <p className="flex justify-between">
-            <span className="">ประเภทของปัญหา:</span>
+          <hr />
+          <p className="flex">
+            <span className="w-2/6">ประเภทของปัญหา</span>
             {selectedIssue?.problem}
           </p>
-          <p className="flex justify-between">
-            <span className="">อาการเสีย/ปัญหา:</span>
+          <hr />
+          <p className="flex">
+            <span className="w-2/6">อาการเสีย/ปัญหา</span>
+
             {selectedIssue?.detail}
           </p>
-          <p className="flex justify-between">
-            <span className="">สถานะงาน:</span>
+          <hr />
+          <p className="flex">
+            <span className="w-2/6">สถานะงาน</span>
             {selectedIssue?.status.label}
           </p>
-          <p className="flex justify-between">
-            <span className="">ผู้รับงาน:</span>
+          <hr />
+          <p className="flex">
+            <span className="w-2/6">ผู้รับงาน</span>
             {ifNull(selectedIssue?.officer)}
           </p>
-          <p className="flex justify-between">
-            <span className="">ระยะเวลาซ่อม:</span>-
+          <hr />
+          <p className="flex">
+            <span className="w-2/6">ระยะเวลาซ่อม</span>-
           </p>
-          <p className="flex justify-between">
-            <span className="">สรุปผลการซ่อม:</span>
+          <hr />
+          <p className="flex">
+            <span className="w-2/6">สรุปผลการซ่อม</span>
             {ifNull(selectedIssue?.fixResult)}
           </p>
         </div>
