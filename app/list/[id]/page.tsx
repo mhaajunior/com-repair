@@ -6,7 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { Spin, Tag } from "antd";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Status } from "@prisma/client";
+import { Role, Status } from "@prisma/client";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -221,72 +221,81 @@ const EditPage = () => {
             <div>
               <h1 className="font-bold text-xl">แก้ไขงาน</h1>
               <hr className="my-3" />
-              <form className="flex flex-wrap" onSubmit={onSubmit}>
-                <InputWrap
-                  label="เปลี่ยนสถานะงาน"
-                  isValid={!errors.status}
-                  required
-                  className="pl-0"
-                  alignStart
-                >
-                  <Dropdown
-                    name="status"
-                    placeholder="สถานะงาน"
-                    options={statusOption}
-                    className="w-60 md:w-72"
-                    control={control}
-                    errors={errors.status}
-                  />
-                </InputWrap>
-
-                {(status === Status.CANT_FIX ||
-                  status === Status.NOTIFY ||
-                  status === Status.CLOSED) && (
-                  <>
-                    <InputWrap
-                      label="สรุปผลการซ่อม"
-                      isValid={!fixResultError}
-                      required
-                      className="pl-0"
-                      alignStart
-                    >
-                      <Input
-                        name="fixResult"
-                        placeholder="สรุปผลการซ่อม"
-                        register={register}
-                        errors={fixResultError}
-                        className="w-60 md:w-72"
-                        textarea
-                      />
-                    </InputWrap>
-                    <InputWrap
-                      label="หมายเหตุ/อื่นๆ"
-                      isValid={!errors.note}
-                      className="pl-0"
-                      alignStart
-                    >
-                      <Input
-                        name="note"
-                        placeholder="หมายเหตุ/อื่นๆ"
-                        register={register}
-                        errors={errors.note}
-                        className="w-60 md:w-72"
-                        textarea
-                      />
-                    </InputWrap>
-                  </>
-                )}
-                <div className="w-full">
-                  <Button
-                    type="submit"
-                    primary
-                    className="!mx-auto !mt-10"
-                    loading={loading}
-                  >
-                    บันทึก
-                  </Button>
+              {/* {(session?.user.role !== Role.ADMIN && issue?.officerId && issue?.officerId !== session?.user.id) && <div>ไม่มีสิทธิ์<div/> } */}
+              {session?.user.role !== Role.ADMIN &&
+              issue?.officerId &&
+              issue?.officerId !== session?.user.id ? (
+                <div className="!leading-10 text-lg">
+                  คุณไม่สามารถแก้ไขงานที่ดำเนินการโดยเจ้าหน้าที่คนอื่นไปแล้วได้
                 </div>
-              </form>
+              ) : (
+                <form className="flex flex-wrap" onSubmit={onSubmit}>
+                  <InputWrap
+                    label="เปลี่ยนสถานะงาน"
+                    isValid={!errors.status}
+                    required
+                    className="pl-0"
+                    alignStart
+                  >
+                    <Dropdown
+                      name="status"
+                      placeholder="สถานะงาน"
+                      options={statusOption}
+                      className="w-60 md:w-72"
+                      control={control}
+                      errors={errors.status}
+                    />
+                  </InputWrap>
+
+                  {(status === Status.CANT_FIX ||
+                    status === Status.NOTIFY ||
+                    status === Status.CLOSED) && (
+                    <>
+                      <InputWrap
+                        label="สรุปผลการซ่อม"
+                        isValid={!fixResultError}
+                        required
+                        className="pl-0"
+                        alignStart
+                      >
+                        <Input
+                          name="fixResult"
+                          placeholder="สรุปผลการซ่อม"
+                          register={register}
+                          errors={fixResultError}
+                          className="w-60 md:w-72"
+                          textarea
+                        />
+                      </InputWrap>
+                      <InputWrap
+                        label="หมายเหตุ/อื่นๆ"
+                        isValid={!errors.note}
+                        className="pl-0"
+                        alignStart
+                      >
+                        <Input
+                          name="note"
+                          placeholder="หมายเหตุ/อื่นๆ"
+                          register={register}
+                          errors={errors.note}
+                          className="w-60 md:w-72"
+                          textarea
+                        />
+                      </InputWrap>
+                    </>
+                  )}
+                  <div className="w-full">
+                    <Button
+                      type="submit"
+                      primary
+                      className="!mx-auto !mt-10"
+                      loading={loading}
+                    >
+                      บันทึก
+                    </Button>
+                  </div>
+                </form>
+              )}
             </div>
           </>
         )}

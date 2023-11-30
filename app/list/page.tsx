@@ -295,42 +295,42 @@ const ListPage = () => {
         okButtonProps={{ style: { display: "none" } }}
         cancelButtonProps={{ style: { display: "none" } }}
       >
-        <div className="text-gray-600 text-base leading-9">
+        <div className="text-gray-600 text-base leading-7">
           <p className="flex">
             <span className="w-2/6">เลขที่ใบแจ้ง</span>
             <span className="w-4/6">{selectedIssue?.id}</span>
           </p>
-          <hr />
-          <p className="flex">
+          <hr className="my-1" />
+          <p className="flex py-2">
             <span className="w-2/6">วันเวลาที่แจ้ง</span>
             <span className="w-4/6">{selectedIssue?.createdAt}</span>
           </p>
-          <hr />
+          <hr className="my-1" />
           <p className="flex">
             <span className="w-2/6">ผู้แจ้ง</span>
             <span className="w-4/6">{selectedIssue?.sender}</span>
           </p>
-          <hr />
+          <hr className="my-1" />
           <p className="flex">
             <span className="w-2/6">หน่วยงาน</span>
             <span className="w-4/6">{selectedIssue?.workGroup}</span>
           </p>
-          <hr />
+          <hr className="my-1" />
           <p className="flex">
             <span className="w-2/6">เบอร์โทร</span>
             <span className="w-4/6">{selectedIssue?.phone}</span>
           </p>
-          <hr />
+          <hr className="my-1" />
           <p className="flex">
             <span className="w-2/6">ประเภทของปัญหา</span>
             <span className="w-4/6">{selectedIssue?.problem}</span>
           </p>
-          <hr />
+          <hr className="my-1" />
           <p className="flex">
             <span className="w-2/6">อาการเสีย/ปัญหา</span>
             <span className="w-4/6">{selectedIssue?.detail}</span>
           </p>
-          <hr />
+          <hr className="my-1" />
           <p className="flex">
             <span className="w-2/6">สถานะงาน</span>
             <span>
@@ -342,22 +342,22 @@ const ListPage = () => {
               </Tag>
             </span>
           </p>
-          <hr />
+          <hr className="my-1" />
           <p className="flex">
             <span className="w-2/6">ผู้รับงาน</span>
             <span className="w-4/6">{ifNull(selectedIssue?.officer)}</span>
           </p>
-          <hr />
+          <hr className="my-1" />
           <p className="flex">
             <span className="w-2/6">ระยะเวลาซ่อม</span>
             <span className="w-4/6">{ifNull(selectedIssue?.duration)}</span>
           </p>
-          <hr />
+          <hr className="my-1" />
           <p className="flex">
             <span className="w-2/6">สรุปผลการซ่อม</span>
             <span className="w-4/6">{ifNull(selectedIssue?.fixResult)}</span>
           </p>
-          <hr />
+          <hr className="my-1" />
           <p className="flex">
             <span className="w-2/6">หมายเหตุ/อื่นๆ</span>
             <span className="w-4/6">{ifNull(selectedIssue?.note)}</span>

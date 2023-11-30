@@ -9,6 +9,7 @@ export interface Issue {
   fixResult: string | null;
   status: StatusMap;
   createdAt: string;
+  officerId: string | null;
   officer: string | null;
   duration: string | null;
   note: string | null;

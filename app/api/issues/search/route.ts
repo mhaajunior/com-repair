@@ -114,6 +114,7 @@ const userFetchIssues = async (body: SearchIssueParams) => {
         createdAt: moment(issue.createdAt).format("YYYY-MM-DD HH:mm:ss"),
         workGroup: issue.group.label + " " + issue.team.abb,
         problem: issue.problem.label,
+        officerId: issue.officerId,
         officer: issue.officer?.name
           ? issue.officer?.name + " " + issue.officer?.surname
           : null,
@@ -225,9 +226,9 @@ const officerFetchIssues = async (body: SearchIssueParams, userId: string) => {
     });
 
     const issues: Issue[] = [];
-    let duration: any = null;
 
     res.forEach((issue, index) => {
+      let duration: any = null;
       if (issue.fixEndDate) {
         const fixEndDate = moment(issue.fixEndDate);
         const fixStartDate = moment(issue.fixStartDate);
@@ -244,6 +245,7 @@ const officerFetchIssues = async (body: SearchIssueParams, userId: string) => {
         createdAt: moment(issue.createdAt).format("YYYY-MM-DD HH:mm:ss"),
         workGroup: issue.group.label + " " + issue.team.abb,
         problem: issue.problem.label,
+        officerId: issue.officerId,
         officer: issue.officer?.name
           ? issue.officer?.name + " " + issue.officer?.surname
           : null,
