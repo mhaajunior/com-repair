@@ -1,3 +1,4 @@
+import { Status } from "@prisma/client";
 import { z } from "zod";
 
 export const createIssueSchema = z.object({
@@ -46,4 +47,19 @@ export const searchIssueSchema = z.object({
 export const signInSchema = z.object({
   email: z.string().min(1, "กรุณากรอกอีเมล"),
   password: z.string().min(1, "กรุณากรอกรหัสผ่าน"),
+});
+
+export const editIssueSchema = z.object({
+  id: z.number(),
+  status: z.nativeEnum(Status, {
+    required_error: "กรุณาเลือกสถานะงาน",
+  }),
+  fixResult: z
+    .string()
+    .max(255, "รายละเอียดที่กรอกยาวเกินกว่าที่กำหนด")
+    .optional(),
+  officerId: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  note: z.string().max(255, "รายละเอียดที่กรอกยาวเกินกว่าที่กำหนด").optional(),
 });

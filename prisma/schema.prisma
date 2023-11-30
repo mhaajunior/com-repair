@@ -22,15 +22,15 @@ model Issue {
   problemId Int
   problem Problem @relation(fields: [problemId], references: [id])
   detail String @db.Text
+  status Status @default(OPEN)
+  createdAt DateTime @default(now())
+  
   officerId String?
   officer User? @relation(fields: [officerId], references: [id])
-
-  fixResult String? @db.Text
-  status Status @default(OPEN)
-
-  createdAt DateTime @default(now())
   fixStartDate DateTime?
   fixEndDate DateTime?
+  fixResult String? @db.Text
+  note String? @db.Text
 }
 
 model Team {

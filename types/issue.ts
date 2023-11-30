@@ -10,6 +10,8 @@ export interface Issue {
   status: StatusMap;
   createdAt: string;
   officer: string | null;
+  duration: string | null;
+  note: string | null;
 }
 
 export interface StatusMap {

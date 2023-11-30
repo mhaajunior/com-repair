@@ -1,6 +1,6 @@
 export interface SelectOption {
   label: string;
-  value: number;
+  value: number | string;
 }
 
 export interface SelectOptionWithTeam extends SelectOption {

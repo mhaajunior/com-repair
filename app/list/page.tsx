@@ -112,11 +112,6 @@ const ListPage = () => {
     }
   }, [status, response]);
 
-  const filters: { text: string; value: string }[] = [];
-  for (const [key, value] of Object.entries(statusMap)) {
-    filters.push({ text: value.label, value: value.value });
-  }
-
   const handleViewClick = (issue: Issue) => {
     setSelectedIssue(issue);
     setModalOpen(true);
@@ -190,7 +185,7 @@ const ListPage = () => {
           >
             <FaClipboardList />
           </div>
-          <Link href={`/edit/${record.id}`}>
+          <Link href={`/list/${record.id}`}>
             <FaPencilAlt />
           </Link>
           {session?.user.role === "ADMIN" && <FaTrash />}
@@ -249,10 +244,9 @@ const ListPage = () => {
             <AiOutlineSearch />
           </Button>
         </form>
-        <div className="mt-10 relative">
-          <Spin size="large" className="center" />
+        <div className="mt-10">
           {loading ? (
-            <Spin size="large" className="center" />
+            <Spin size="large" className="flex justify-center" />
           ) : (
             <div>
               <div className="flex flex-wrap">
@@ -304,56 +298,69 @@ const ListPage = () => {
         <div className="text-gray-600 text-base leading-9">
           <p className="flex">
             <span className="w-2/6">เลขที่ใบแจ้ง</span>
-            {selectedIssue?.id}
+            <span className="w-4/6">{selectedIssue?.id}</span>
           </p>
+          <hr />
           <p className="flex">
             <span className="w-2/6">วันเวลาที่แจ้ง</span>
-            {selectedIssue?.createdAt}
+            <span className="w-4/6">{selectedIssue?.createdAt}</span>
           </p>
           <hr />
           <p className="flex">
             <span className="w-2/6">ผู้แจ้ง</span>
-            {selectedIssue?.sender}
+            <span className="w-4/6">{selectedIssue?.sender}</span>
           </p>
           <hr />
           <p className="flex">
             <span className="w-2/6">หน่วยงาน</span>
-            {selectedIssue?.workGroup}
+            <span className="w-4/6">{selectedIssue?.workGroup}</span>
           </p>
           <hr />
           <p className="flex">
             <span className="w-2/6">เบอร์โทร</span>
-            {selectedIssue?.phone}
+            <span className="w-4/6">{selectedIssue?.phone}</span>
           </p>
           <hr />
           <p className="flex">
             <span className="w-2/6">ประเภทของปัญหา</span>
-            {selectedIssue?.problem}
+            <span className="w-4/6">{selectedIssue?.problem}</span>
           </p>
           <hr />
           <p className="flex">
             <span className="w-2/6">อาการเสีย/ปัญหา</span>
-
-            {selectedIssue?.detail}
+            <span className="w-4/6">{selectedIssue?.detail}</span>
           </p>
           <hr />
           <p className="flex">
             <span className="w-2/6">สถานะงาน</span>
-            {selectedIssue?.status.label}
+            <span>
+              <Tag
+                color={selectedIssue?.status.color}
+                key={selectedIssue?.status.value}
+              >
+                {selectedIssue?.status.label}
+              </Tag>
+            </span>
           </p>
           <hr />
           <p className="flex">
             <span className="w-2/6">ผู้รับงาน</span>
-            {ifNull(selectedIssue?.officer)}
+            <span className="w-4/6">{ifNull(selectedIssue?.officer)}</span>
           </p>
           <hr />
           <p className="flex">
-            <span className="w-2/6">ระยะเวลาซ่อม</span>-
+            <span className="w-2/6">ระยะเวลาซ่อม</span>
+            <span className="w-4/6">{ifNull(selectedIssue?.duration)}</span>
           </p>
           <hr />
           <p className="flex">
             <span className="w-2/6">สรุปผลการซ่อม</span>
-            {ifNull(selectedIssue?.fixResult)}
+            <span className="w-4/6">{ifNull(selectedIssue?.fixResult)}</span>
+          </p>
+          <hr />
+          <p className="flex">
+            <span className="w-2/6">หมายเหตุ/อื่นๆ</span>
+            <span className="w-4/6">{ifNull(selectedIssue?.note)}</span>
           </p>
         </div>
       </Modal>

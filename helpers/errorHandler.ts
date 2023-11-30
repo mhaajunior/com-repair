@@ -5,7 +5,11 @@ export const errorHandler = (err: Error | AxiosError) => {
   let text = "เกิดข้อผิดพลาดบางอย่าง กรุณาลองใหม่อีกครั้ง";
   if (axios.isAxiosError(err)) {
     if (err?.response?.data) {
-      text = err.response.data;
+      if (typeof err?.response?.data === "string") {
+        text = err.response.data;
+      } else {
+        text = "ประเภทของข้อมูลไม่ถูกต้อง";
+      }
     } else {
       if (err.response?.status === 500) {
         text = "ไม่มีการตอบสนองจากเซิฟเวอร์ กรุณาลองใหม่อีกครั้ง";

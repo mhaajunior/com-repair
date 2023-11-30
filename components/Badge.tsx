@@ -21,7 +21,7 @@ const Badge = ({
     rest.className,
     "text-center relative p-2 text-sm text-white rounded-t-xl hover:cursor-pointer opacity-50 hover:opacity-100 w-[100px] whitespace-nowrap overflow-hidden text-ellipsis",
     {
-      "border-t-[5px] border-gray-400 opacity-100": active,
+      "border-t-[5px] border-gray-400 !opacity-100": active,
     }
   );
 

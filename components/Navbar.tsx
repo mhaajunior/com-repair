@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import useClientSession from "../hooks/use-client-session";
 import { FaSignOutAlt } from "react-icons/fa";
 import { Role } from "@prisma/client";
@@ -11,6 +11,7 @@ import Button from "./Button";
 const Navbar = () => {
   const currentPath = usePathname();
   const session = useClientSession();
+  const router = useRouter();
 
   let navItems = [
     {
@@ -77,8 +78,12 @@ const Navbar = () => {
               </li>
             </ul>
           ) : (
-            <Button primary className="!shadow-none">
-              <Link href="/api/auth/signin">เข้าสู่ระบบ</Link>
+            <Button
+              primary
+              className="!shadow-none"
+              onClick={() => router.push("/api/auth/signin")}
+            >
+              เข้าสู่ระบบ
             </Button>
           )}
         </nav>

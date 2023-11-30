@@ -1,7 +1,8 @@
-import { createIssueSchema } from "@/types/validationSchemas";
+import { createIssueSchema, editIssueSchema } from "@/types/validationSchemas";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/db";
-import { Prisma } from "@prisma/client";
+import { Prisma, Status } from "@prisma/client";
+import { validateUser } from "../common/middleware";
 
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
@@ -35,6 +36,75 @@ export const POST = async (req: NextRequest) => {
       },
     });
     return NextResponse.json(newIssue, { status: 201 });
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(e);
+    }
+    throw e;
+  }
+};
+
+export const PATCH = async (req: NextRequest) => {
+  const body = await req.json();
+  const userId = req.headers.get("user-id");
+  const validation = editIssueSchema.safeParse(body);
+
+  const { id, status, fixResult, officerId, startDate, endDate, note } = body;
+
+  if (!validation.success) {
+    return NextResponse.json(validation.error.errors, { status: 400 });
+  }
+
+  let trimFixResult = fixResult;
+  let trimNote = note;
+
+  if (trimFixResult) {
+    trimFixResult = fixResult.trim();
+  }
+
+  if (trimNote) {
+    trimNote = note.trim();
+  }
+
+  if (
+    (status === Status.CLOSED ||
+      status === Status.NOTIFY ||
+      status === Status.CANT_FIX) &&
+    !trimFixResult
+  ) {
+    return NextResponse.json("กรุณากรอกสรุปผลการซ่อม", { status: 400 });
+  }
+
+  try {
+    if (!userId) {
+      return NextResponse.json({ status: 401 });
+    } else {
+      if (!validateUser(userId)) {
+        return NextResponse.json("ข้อมูลผู้ใช้ไม่ถูกต้อง", { status: 401 });
+      }
+    }
+
+    const found = await prisma.issue.findUnique({ where: { id } });
+
+    if (!found) {
+      return NextResponse.json("ใบแจ้งซ่อมไม่ถูกต้อง", { status: 400 });
+    }
+
+    const updateIssue = await prisma.issue.update({
+      where: {
+        id,
+      },
+      data: {
+        status,
+        officerId,
+        fixStartDate: startDate,
+        fixEndDate: endDate,
+        fixResult: trimFixResult,
+        note: trimNote,
+      },
+    });
+
+    return NextResponse.json(updateIssue);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       console.log(e);

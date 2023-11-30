@@ -5,19 +5,31 @@ const InputWrap = ({
   isValid,
   required = false,
   children,
+  alignStart,
+  ...rest
 }: {
   label: string;
   isValid: boolean;
   required?: boolean;
   children: React.ReactNode;
+  alignStart?: boolean;
+  [rest: string]: any;
 }) => {
-  const classes = classNames("sm:flex py-5 px-8 items-center", {
-    error: !isValid,
-  });
+  const classes = classNames(
+    `${rest.className} sm:flex py-5 px-8 items-center`,
+    {
+      "!items-start": alignStart,
+      error: !isValid,
+    }
+  );
 
   return (
     <div className={classes}>
-      <div className="pr-7 font-medium sm:w-40 w-full label">
+      <div
+        className={`${
+          alignStart ? "pt-2" : ""
+        } pr-7 font-medium sm:w-40 w-full label`}
+      >
         {label.toUpperCase()}
         {required && <span className="text-red-500">*</span>}
       </div>

@@ -7,6 +7,7 @@ import { CountIssue, Issue, SearchIssueParams } from "@/types/issue";
 import { statusMap } from "@/helpers/statusMap";
 import { validateUser } from "../../common/middleware";
 import { getQuarterDate } from "@/helpers/date";
+import { secondsToDhms } from "@/helpers/common";
 
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
@@ -84,12 +85,24 @@ const userFetchIssues = async (body: SearchIssueParams) => {
             label: true,
           },
         },
+        officer: {
+          select: {
+            name: true,
+            surname: true,
+          },
+        },
       },
     });
 
     const issues: Issue[] = [];
+    let duration: any = null;
 
-    res.forEach((issue, index) =>
+    res.forEach((issue, index) => {
+      if (issue.fixEndDate) {
+        const fixEndDate = moment(issue.fixEndDate);
+        const fixStartDate = moment(issue.fixStartDate);
+        duration = moment.duration(fixEndDate.diff(fixStartDate, "seconds"));
+      }
       issues.push({
         key: index + 1,
         id: issue.id,
@@ -101,9 +114,13 @@ const userFetchIssues = async (body: SearchIssueParams) => {
         createdAt: moment(issue.createdAt).format("YYYY-MM-DD HH:mm:ss"),
         workGroup: issue.group.label + " " + issue.team.abb,
         problem: issue.problem.label,
-        officer: null,
-      })
-    );
+        officer: issue.officer?.name
+          ? issue.officer?.name + " " + issue.officer?.surname
+          : null,
+        duration: duration ? secondsToDhms(duration) : null,
+        note: issue.note,
+      });
+    });
 
     return NextResponse.json(issues);
   } catch (e) {
@@ -172,7 +189,7 @@ const officerFetchIssues = async (body: SearchIssueParams, userId: string) => {
 
   try {
     if (!validateUser(userId)) {
-      return NextResponse.json({ status: 401 });
+      return NextResponse.json("ข้อมูลผู้ใช้ไม่ถูกต้อง", { status: 401 });
     }
 
     const res = await prisma.issue.findMany({
@@ -198,12 +215,24 @@ const officerFetchIssues = async (body: SearchIssueParams, userId: string) => {
             label: true,
           },
         },
+        officer: {
+          select: {
+            name: true,
+            surname: true,
+          },
+        },
       },
     });
 
     const issues: Issue[] = [];
+    let duration: any = null;
 
-    res.forEach((issue, index) =>
+    res.forEach((issue, index) => {
+      if (issue.fixEndDate) {
+        const fixEndDate = moment(issue.fixEndDate);
+        const fixStartDate = moment(issue.fixStartDate);
+        duration = moment.duration(fixEndDate.diff(fixStartDate, "seconds"));
+      }
       issues.push({
         key: index + 1,
         id: issue.id,
@@ -215,9 +244,13 @@ const officerFetchIssues = async (body: SearchIssueParams, userId: string) => {
         createdAt: moment(issue.createdAt).format("YYYY-MM-DD HH:mm:ss"),
         workGroup: issue.group.label + " " + issue.team.abb,
         problem: issue.problem.label,
-        officer: null,
-      })
-    );
+        officer: issue.officer?.name
+          ? issue.officer?.name + " " + issue.officer?.surname
+          : null,
+        duration: duration ? secondsToDhms(duration) : null,
+        note: issue.note,
+      });
+    });
 
     const countIssues: CountIssue = { ALL: 0 };
     let total = 0;
