@@ -1,7 +1,7 @@
 import { createIssueSchema, editIssueSchema } from "@/types/validationSchemas";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/db";
-import { Prisma, Status } from "@prisma/client";
+import { Prisma, Role, Status } from "@prisma/client";
 import { validateUser } from "../common/middleware";
 
 export const POST = async (req: NextRequest) => {
@@ -49,7 +49,16 @@ export const PATCH = async (req: NextRequest) => {
   const userId = req.headers.get("user-id");
   const validation = editIssueSchema.safeParse(body);
 
-  const { id, status, fixResult, officerId, startDate, endDate, note } = body;
+  const {
+    id,
+    status,
+    fixResult,
+    officerId,
+    startDate,
+    endDate,
+    note,
+    isCompleted,
+  } = body;
 
   if (!validation.success) {
     return NextResponse.json(validation.error.errors, { status: 400 });
@@ -76,18 +85,40 @@ export const PATCH = async (req: NextRequest) => {
   }
 
   try {
+    let user: any;
     if (!userId) {
       return NextResponse.json({ status: 401 });
     } else {
-      if (!validateUser(userId)) {
+      user = await validateUser(userId);
+      if (!user) {
         return NextResponse.json("ข้อมูลผู้ใช้ไม่ถูกต้อง", { status: 401 });
       }
     }
 
-    const found = await prisma.issue.findUnique({ where: { id } });
+    const found = await prisma.issue.findUnique({
+      where: { id },
+      include: {
+        officer: {
+          select: {
+            role: true,
+          },
+        },
+      },
+    });
 
     if (!found) {
       return NextResponse.json("ใบแจ้งซ่อมไม่ถูกต้อง", { status: 400 });
+    }
+
+    if (
+      found.officer &&
+      found.officerId !== userId &&
+      user.role !== Role.ADMIN
+    ) {
+      return NextResponse.json(
+        "ไม่สามารถแก้งานที่ดำเนินการโดยเจ้าหน้าที่คนอื่นได้",
+        { status: 400 }
+      );
     }
 
     const updateIssue = await prisma.issue.update({
@@ -101,6 +132,7 @@ export const PATCH = async (req: NextRequest) => {
         fixEndDate: endDate,
         fixResult: trimFixResult,
         note: trimNote,
+        isCompleted,
       },
     });
 

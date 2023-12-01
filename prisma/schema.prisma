@@ -24,6 +24,7 @@ model Issue {
   detail String @db.Text
   status Status @default(OPEN)
   createdAt DateTime @default(now())
+  isCompleted Boolean @default(false)
   
   officerId String?
   officer User? @relation(fields: [officerId], references: [id])

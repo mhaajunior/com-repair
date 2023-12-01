@@ -13,6 +13,7 @@ export interface Issue {
   officer: string | null;
   duration: string | null;
   note: string | null;
+  isCompleted: boolean;
 }
 
 export interface StatusMap {

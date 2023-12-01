@@ -71,7 +71,19 @@ const EditPage = () => {
       );
       break;
     default:
-      statusOption = [];
+      if (
+        session?.user.role !== Role.ADMIN ||
+        issue?.status.value.toUpperCase() === Status.CANCELED
+      ) {
+        statusOption = [];
+      } else {
+        statusOption = statusOption.filter(
+          (item) =>
+            item.value !== issue?.status.value.toUpperCase() &&
+            item.value !== Status.OPEN &&
+            item.value !== Status.CANCELED
+        );
+      }
   }
 
   useEffect(() => {
@@ -119,14 +131,46 @@ const EditPage = () => {
     }
 
     if (status === Status.IN_PROGRESS) {
-      data.officerId = session?.user.id;
-      data.startDate = new Date().toISOString();
+      if (
+        session?.user.role === Role.ADMIN &&
+        (issue?.status.value.toUpperCase() === Status.CLOSED ||
+          issue?.status.value.toUpperCase() === Status.NOTIFY ||
+          issue?.status.value.toUpperCase() === Status.CANT_FIX)
+      ) {
+        data.endDate = null;
+        data.isCompleted = false;
+        data.fixResult = null;
+        data.note = null;
+      } else {
+        data.officerId = session?.user.id;
+        data.startDate = new Date().toISOString();
+      }
     } else if (
       status === Status.CLOSED ||
       status === Status.NOTIFY ||
       status === Status.CANT_FIX
     ) {
       data.endDate = new Date().toISOString();
+      data.isCompleted = true;
+    } else if (status === Status.ACKNOWLEDGE) {
+      if (
+        session?.user.role === Role.ADMIN &&
+        (issue?.status.value.toUpperCase() === Status.CLOSED ||
+          issue?.status.value.toUpperCase() === Status.NOTIFY ||
+          issue?.status.value.toUpperCase() === Status.CANT_FIX)
+      ) {
+        data.officerId = null;
+        data.startDate = null;
+        data.endDate = null;
+        data.isCompleted = false;
+        data.fixResult = null;
+        data.note = null;
+      } else {
+        if (issue?.status.value.toUpperCase() === Status.IN_PROGRESS) {
+          data.officerId = null;
+          data.startDate = null;
+        }
+      }
     }
 
     try {
@@ -221,12 +265,15 @@ const EditPage = () => {
             <div>
               <h1 className="font-bold text-xl">แก้ไขงาน</h1>
               <hr className="my-3" />
-              {/* {(session?.user.role !== Role.ADMIN && issue?.officerId && issue?.officerId !== session?.user.id) && <div>ไม่มีสิทธิ์<div/> } */}
               {session?.user.role !== Role.ADMIN &&
               issue?.officerId &&
               issue?.officerId !== session?.user.id ? (
                 <div className="!leading-10 text-lg">
                   คุณไม่สามารถแก้ไขงานที่ดำเนินการโดยเจ้าหน้าที่คนอื่นไปแล้วได้
+                </div>
+              ) : issue?.isCompleted && session?.user.role !== Role.ADMIN ? (
+                <div className="!leading-10 text-lg">
+                  คุณไม่สามารถแก้ไขงานที่ถูกปิดไปแล้วได้
                 </div>
               ) : (
                 <form className="flex flex-wrap" onSubmit={onSubmit}>

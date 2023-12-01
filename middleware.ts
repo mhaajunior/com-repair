@@ -17,4 +17,4 @@ export default withAuth(
   }
 );
 
-export const config = { matcher: ["/createUser", "/list"] };
+export const config = { matcher: ["/createUser", "/list", "/list/:id*"] };

@@ -120,6 +120,7 @@ const userFetchIssues = async (body: SearchIssueParams) => {
           : null,
         duration: duration ? secondsToDhms(duration) : null,
         note: issue.note,
+        isCompleted: issue.isCompleted,
       });
     });
 
@@ -189,7 +190,7 @@ const officerFetchIssues = async (body: SearchIssueParams, userId: string) => {
   }
 
   try {
-    if (!validateUser(userId)) {
+    if (!(await validateUser(userId))) {
       return NextResponse.json("ข้อมูลผู้ใช้ไม่ถูกต้อง", { status: 401 });
     }
 
@@ -251,6 +252,7 @@ const officerFetchIssues = async (body: SearchIssueParams, userId: string) => {
           : null,
         duration: duration ? secondsToDhms(duration) : null,
         note: issue.note,
+        isCompleted: issue.isCompleted,
       });
     });
 

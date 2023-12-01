@@ -6,16 +6,23 @@ import { Modal, Spin, Table, Tag, Tooltip } from "antd";
 import { ColumnsType, TableProps } from "antd/es/table";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { FaPencilAlt, FaClipboardList, FaTrash } from "react-icons/fa";
+import {
+  FaPencilAlt,
+  FaClipboardList,
+  FaTrash,
+  FaTrashRestore,
+} from "react-icons/fa";
 import { AiOutlineSearch } from "react-icons/ai";
-import useClientSession from "@/hooks/use-client-session";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import moment from "moment";
+import { Role, Status } from "@prisma/client";
+import Swal from "sweetalert2";
+import { toast } from "sonner";
 
 import { Issue, StatusMap } from "@/types/issue";
-import { searchIssueSchema } from "@/types/validationSchemas";
+import { editIssueSchema, searchIssueSchema } from "@/types/validationSchemas";
 import { errorHandler } from "@/helpers/errorHandler";
 import { ifNull } from "@/helpers/common";
 import { statusMap } from "@/helpers/statusMap";
@@ -24,8 +31,10 @@ import Badge from "@/components/Badge";
 import Button from "@/components/Button";
 import Input from "@/components/inputGroup/Input";
 import RangePicker from "@/components/inputGroup/RangePicker";
+import useClientSession from "@/hooks/use-client-session";
 
 type SearchForm = z.infer<typeof searchIssueSchema>;
+type EditForm = z.infer<typeof editIssueSchema>;
 
 const ListPage = () => {
   const [response, setResponse] = useState<Issue[]>([]);
@@ -117,6 +126,72 @@ const ListPage = () => {
     setModalOpen(true);
   };
 
+  const manageIssue = async (id: number, status: Status) => {
+    const data: EditForm = { id, status };
+    if (status === Status.ACKNOWLEDGE) {
+      data.officerId = null;
+      data.startDate = null;
+      data.endDate = null;
+      data.isCompleted = false;
+      data.fixResult = null;
+      data.note = null;
+    }
+
+    try {
+      setLoading(true);
+      await axios.patch("/api/issues", data, {
+        headers: {
+          "user-id": session?.user.id,
+        },
+      });
+      getIssuesList({
+        rangeDate: getValues("rangeDate"),
+        id: getValues("id"),
+        fullname: getValues("fullname"),
+      });
+    } catch (err: any) {
+      errorHandler(err);
+    }
+  };
+
+  const handleCancelClick = (issue: Issue) => {
+    Swal.fire({
+      title: "คำเตือน",
+      text: `คุณต้องการยกเลิกใบแจ้งเลขที่ ${issue.id} ใช่หรือไม่`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      cancelButtonText: "ไม่",
+      confirmButtonText: "ใช่",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        manageIssue(issue.id, Status.CANCELED);
+        toast.success("ยกเลิกงานเรียบร้อย");
+        setLoading(false);
+      }
+    });
+  };
+
+  const handleRestoreClick = (issue: Issue) => {
+    Swal.fire({
+      title: "คำเตือน",
+      text: `คุณต้องการกู้คืนใบแจ้งเลขที่ ${issue.id} ใช่หรือไม่`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      cancelButtonText: "ไม่",
+      confirmButtonText: "ใช่",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        manageIssue(issue.id, Status.ACKNOWLEDGE);
+        toast.success("กู้คืนงานสำเร็จ");
+        setLoading(false);
+      }
+    });
+  };
+
   const columns: ColumnsType<Issue> = [
     {
       title: "ลำดับ",
@@ -178,17 +253,43 @@ const ListPage = () => {
       fixed: "right",
       width: "9%",
       render: (value, record) => (
-        <div className="flex gap-4 text-lg">
-          <div
-            className="cursor-pointer hover:text-blue-300"
-            onClick={() => handleViewClick(record)}
-          >
-            <FaClipboardList />
-          </div>
-          <Link href={`/list/${record.id}`}>
-            <FaPencilAlt />
-          </Link>
-          {session?.user.role === "ADMIN" && <FaTrash />}
+        <div className="flex gap-3 text-lg">
+          <Tooltip title="ดูข้อมูล">
+            <div
+              className="cursor-pointer hover:text-blue-300"
+              onClick={() => handleViewClick(record)}
+            >
+              <FaClipboardList />
+            </div>
+          </Tooltip>
+          {(!record.isCompleted || session?.user.role === Role.ADMIN) &&
+            record.status.value.toUpperCase() !== Status.CANCELED && (
+              <Tooltip title="แก้ไขงาน">
+                <Link href={`/list/${record.id}`}>
+                  <FaPencilAlt />
+                </Link>
+              </Tooltip>
+            )}
+          {session?.user.role === "ADMIN" &&
+            (record.status.value.toUpperCase() !== Status.CANCELED ? (
+              <Tooltip title="ยกเลิกงาน">
+                <div
+                  className="cursor-pointer hover:text-blue-300"
+                  onClick={() => handleCancelClick(record)}
+                >
+                  <FaTrash />
+                </div>
+              </Tooltip>
+            ) : (
+              <Tooltip title="กู้คืนงาน">
+                <div
+                  className="cursor-pointer hover:text-blue-300"
+                  onClick={() => handleRestoreClick(record)}
+                >
+                  <FaTrashRestore />
+                </div>
+              </Tooltip>
+            ))}
         </div>
       ),
     },
@@ -201,6 +302,16 @@ const ListPage = () => {
     extra
   ) => {
     // console.log("params", pagination, filters, sorter, extra);
+  };
+
+  const renderRowClass = (record: Issue) => {
+    if (record.isCompleted) {
+      return "bg-blue-100";
+    }
+    if (record.status.value.toUpperCase() === Status.CANCELED) {
+      return "bg-gray-200";
+    }
+    return "";
   };
 
   return (
@@ -276,6 +387,7 @@ const ListPage = () => {
                 ))}
               </div>
               <Table
+                rowClassName={(record) => renderRowClass(record)}
                 columns={columns}
                 dataSource={filteredRow}
                 onChange={onChange}

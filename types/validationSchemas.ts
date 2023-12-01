@@ -57,9 +57,15 @@ export const editIssueSchema = z.object({
   fixResult: z
     .string()
     .max(255, "รายละเอียดที่กรอกยาวเกินกว่าที่กำหนด")
+    .nullable()
     .optional(),
-  officerId: z.string().optional(),
-  startDate: z.string().optional(),
-  endDate: z.string().optional(),
-  note: z.string().max(255, "รายละเอียดที่กรอกยาวเกินกว่าที่กำหนด").optional(),
+  officerId: z.string().nullable().optional(),
+  startDate: z.string().nullable().optional(),
+  endDate: z.string().nullable().optional(),
+  note: z
+    .string()
+    .max(255, "รายละเอียดที่กรอกยาวเกินกว่าที่กำหนด")
+    .nullable()
+    .optional(),
+  isCompleted: z.boolean().optional(),
 });

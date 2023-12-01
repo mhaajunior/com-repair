@@ -13,7 +13,7 @@ export const validateUser = async (userId: string | null) => {
     if (!user) {
       return false;
     }
-    return true;
+    return user;
   } catch (e) {
     throw e;
   }

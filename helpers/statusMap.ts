@@ -16,6 +16,6 @@ export const statusMap = {
     color: "Chocolate",
   },
   CANT_FIX: { value: "cant_fix", label: "ซ่อมไม่ได้", color: "DarkRed" },
-  CANCELED: { value: "canceled", label: "ยกเลิก", color: "DarkSlateGrey" },
   CLOSED: { value: "closed", label: "เสร็จเรียบร้อย", color: "DarkGreen" },
+  CANCELED: { value: "canceled", label: "ยกเลิก", color: "DarkSlateGrey" },
 };
