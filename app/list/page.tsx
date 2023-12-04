@@ -2,8 +2,9 @@
 
 import axios from "axios";
 import Link from "next/link";
-import { Modal, Spin, Table, Tag, Tooltip } from "antd";
+import { Modal, Spin, Switch, Table, Tag, Tooltip } from "antd";
 import { ColumnsType, TableProps } from "antd/es/table";
+import { FilterValue } from "antd/es/table/interface";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
@@ -37,14 +38,19 @@ type SearchForm = z.infer<typeof searchIssueSchema>;
 type EditForm = z.infer<typeof editIssueSchema>;
 
 const ListPage = () => {
-  const [response, setResponse] = useState<Issue[]>([]);
-  const [filteredRow, setFilteredRow] = useState<Issue[]>([]);
+  const [issues, setIssues] = useState<Issue[]>([]);
+  const [filteredIssues, setFilteredIssues] = useState<Issue[]>([]);
   const [countIssues, setCountIssues] = useState<any>([]);
   const [status, setStatus] = useState<string | null>(null);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
+  const [showOnlyUser, setShowOnlyUser] = useState(false);
+  const [filteredInfo, setFilteredInfo] = useState<
+    Record<string, FilterValue | null>
+  >({});
+
   const session = useClientSession();
 
   const dateFormat = "DD/MM/YYYY";
@@ -64,10 +70,13 @@ const ListPage = () => {
       rangeDate: [dayjs(startDate, dateFormat), dayjs(endDate, dateFormat)],
     },
   });
-  const statusArr = [];
+
+  const statusArr: { label: string; value: string; color: string }[] = [];
+  const statusFilter: { text: string; value: string }[] = [];
 
   for (const [key, value] of Object.entries(statusMap)) {
     statusArr.push(value);
+    statusFilter.push({ text: value.label, value: value.value });
   }
 
   const getIssuesList = async (data: SearchForm) => {
@@ -78,7 +87,7 @@ const ListPage = () => {
         },
       });
       if (res.status === 200) {
-        setResponse(res.data.issues);
+        setIssues(res.data.issues);
         setCountIssues(res.data.countIssues);
       }
     } catch (err: any) {
@@ -115,11 +124,11 @@ const ListPage = () => {
 
   useEffect(() => {
     if (status) {
-      setFilteredRow(response.filter((item) => item.status.value === status));
+      setFilteredIssues(issues.filter((item) => item.status.value === status));
     } else {
-      setFilteredRow(response);
+      setFilteredIssues(issues);
     }
-  }, [status, response]);
+  }, [status, issues]);
 
   const handleViewClick = (issue: Issue) => {
     setSelectedIssue(issue);
@@ -232,8 +241,8 @@ const ListPage = () => {
       dataIndex: "officer",
       key: "officer",
       render: (str) => ifNull(str),
-      filters: users,
-      filterSearch: true,
+      filters: !showOnlyUser ? users : undefined,
+      filteredValue: filteredInfo.officer || null,
       onFilter: (value: any, record: Issue) => record.officer === value,
     },
     {
@@ -245,6 +254,9 @@ const ListPage = () => {
           {obj.label}
         </Tag>
       ),
+      filters: showOnlyUser ? statusFilter : undefined,
+      filteredValue: filteredInfo.status || null,
+      onFilter: (value: any, record: Issue) => record.status.value === value,
     },
     {
       title: "รายละเอียด",
@@ -302,6 +314,7 @@ const ListPage = () => {
     extra
   ) => {
     // console.log("params", pagination, filters, sorter, extra);
+    setFilteredInfo(filters);
   };
 
   const renderRowClass = (record: Issue) => {
@@ -314,6 +327,21 @@ const ListPage = () => {
     return "";
   };
 
+  const onSwitchChange = (checked: boolean) => {
+    if (checked) {
+      setShowOnlyUser(true);
+      setFilteredIssues((prevState) =>
+        prevState.filter((item) => item.officerId === session?.user.id)
+      );
+      setFilteredInfo({});
+    } else {
+      setShowOnlyUser(false);
+      setFilteredIssues(issues);
+      setStatus(null);
+      setFilteredInfo({});
+    }
+  };
+
   return (
     <>
       <h1 className="text-3xl">
@@ -322,7 +350,7 @@ const ListPage = () => {
       <div className="card">
         <form
           onSubmit={onSubmit}
-          className="flex flex-wrap gap-x-5 gap-y-5 items-start mb-2"
+          className="flex flex-wrap gap-x-5 gap-y-5 items-start mb-2 "
         >
           <RangePicker
             name="rangeDate"
@@ -355,45 +383,53 @@ const ListPage = () => {
             <AiOutlineSearch />
           </Button>
         </form>
+        <div className="flex mt-5 gap-5 items-center">
+          <p>แสดงเฉพาะงานตัวเอง</p>
+          <Switch onChange={onSwitchChange} className="bg-gray-500" />
+        </div>
         <div className="mt-10">
           {loading ? (
             <Spin size="large" className="flex justify-center" />
           ) : (
             <div>
-              <div className="flex flex-wrap">
-                <Badge
-                  key="all"
-                  color="Black"
-                  onClick={() => setStatus(null)}
-                  active={!status}
-                  count={countIssues["ALL"]}
-                >
-                  <Tooltip title="ทั้งหมด">
-                    <span>ทั้งหมด</span>
-                  </Tooltip>
-                </Badge>
-                {statusArr.map((item) => (
+              {!showOnlyUser && (
+                <div className="flex flex-wrap">
                   <Badge
-                    key={item.value}
-                    color={item.color}
-                    onClick={() => setStatus(item.value)}
-                    active={item.value === status}
-                    count={countIssues[item.value.toUpperCase()]}
+                    key="all"
+                    color="Black"
+                    onClick={() => setStatus(null)}
+                    active={!status}
+                    count={countIssues["ALL"]}
                   >
-                    <Tooltip title={item.label}>
-                      <span>{item.label}</span>
+                    <Tooltip title="ทั้งหมด">
+                      <span>ทั้งหมด</span>
                     </Tooltip>
                   </Badge>
-                ))}
-              </div>
+                  {statusArr.map((item) => (
+                    <Badge
+                      key={item.value}
+                      color={item.color}
+                      onClick={() => setStatus(item.value)}
+                      active={item.value === status}
+                      count={countIssues[item.value.toUpperCase()]}
+                    >
+                      <Tooltip title={item.label}>
+                        <span>{item.label}</span>
+                      </Tooltip>
+                    </Badge>
+                  ))}
+                </div>
+              )}
               <Table
                 rowClassName={(record) => renderRowClass(record)}
                 columns={columns}
-                dataSource={filteredRow}
+                dataSource={filteredIssues}
                 onChange={onChange}
                 scroll={{ x: 1500 }}
-                className="relative"
                 showSorterTooltip={false}
+                pagination={{
+                  defaultPageSize: 100,
+                }}
               />
             </div>
           )}
