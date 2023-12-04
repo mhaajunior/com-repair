@@ -330,8 +330,8 @@ const ListPage = () => {
   const onSwitchChange = (checked: boolean) => {
     if (checked) {
       setShowOnlyUser(true);
-      setFilteredIssues((prevState) =>
-        prevState.filter((item) => item.officerId === session?.user.id)
+      setFilteredIssues(
+        issues.filter((item) => item.officerId === session?.user.id)
       );
       setFilteredInfo({});
     } else {
