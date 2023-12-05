@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
-import { getTeams } from "./team/route";
-import { getGroups } from "./group/route";
-import { getProblems } from "./problem/route";
+import { getTeams } from "./team/team";
+import { getGroups } from "./group/group";
+import { getProblems } from "./problem/problem";
 
 export const GET = async (req: NextRequest) => {
   try {
