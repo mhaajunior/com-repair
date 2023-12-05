@@ -1,3 +1,10 @@
+Officer account:
+  Email: officer@test.com
+  Password: Officer@test
+Admin account:
+  Email: junior29958@gmail.com
+  Password: Test@test
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
