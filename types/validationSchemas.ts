@@ -69,3 +69,45 @@ export const editIssueSchema = z.object({
     .optional(),
   isCompleted: z.boolean().optional(),
 });
+
+export const createUserSchema = z.object({
+  name: z
+    .string()
+    .min(1, "กรุณากรอกชื่อ")
+    .max(32, "รายละเอียดที่กรอกยาวเกินกว่าที่กำหนด"),
+  surname: z
+    .string()
+    .min(1, "กรุณากรอกนามสกุล")
+    .max(32, "รายละเอียดที่กรอกยาวเกินกว่าที่กำหนด"),
+  email: z
+    .string()
+    .min(1, "กรุณากรอกอีเมล")
+    .max(32, "รายละเอียดที่กรอกยาวเกินกว่าที่กำหนด"),
+  password: z
+    .string()
+    .min(1, "กรุณากรอกรหัสผ่าน")
+    .max(32, "รายละเอียดที่กรอกยาวเกินกว่าที่กำหนด"),
+});
+
+export const editUserSchema = z.object({
+  name: z
+    .string()
+    .min(1, "กรุณากรอกชื่อ")
+    .max(32, "รายละเอียดที่กรอกยาวเกินกว่าที่กำหนด"),
+  surname: z
+    .string()
+    .min(1, "กรุณากรอกนามสกุล")
+    .max(32, "รายละเอียดที่กรอกยาวเกินกว่าที่กำหนด"),
+  email: z
+    .string()
+    .min(1, "กรุณากรอกอีเมล")
+    .max(32, "รายละเอียดที่กรอกยาวเกินกว่าที่กำหนด"),
+  password: z
+    .string()
+    .max(32, "รายละเอียดที่กรอกยาวเกินกว่าที่กำหนด")
+    .optional(),
+  confPassword: z
+    .string()
+    .max(32, "รายละเอียดที่กรอกยาวเกินกว่าที่กำหนด")
+    .optional(),
+});

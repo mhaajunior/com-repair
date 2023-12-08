@@ -87,9 +87,10 @@ export const PATCH = async (req: NextRequest) => {
   try {
     let user: any;
     if (!userId) {
-      return NextResponse.json({ status: 401 });
+      return NextResponse.json(null, { status: 401 });
     } else {
-      user = await validateUser(userId);
+      const adminCheck = status === Status.CANCELED;
+      user = await validateUser(userId, adminCheck);
       if (!user) {
         return NextResponse.json("ข้อมูลผู้ใช้ไม่ถูกต้อง", { status: 401 });
       }

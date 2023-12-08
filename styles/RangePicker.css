@@ -2,6 +2,7 @@
   height: 47px;
   border: 1px solid var(--gray);
   border-radius: 10px;
+  width: 15rem;
 }
 
 .rangepicker:hover {
@@ -11,4 +12,10 @@
 .ant-picker-focused.ant-picker {
   border-color: var(--primary) !important;
   box-shadow: none !important;
+}
+
+@media (min-width: 768px) {
+  .rangepicker {
+    width: 18rem;
+  }
 }

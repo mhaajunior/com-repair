@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import Link from "next/link";
-import { Modal, Spin, Switch, Table, Tag, Tooltip } from "antd";
+import { Modal, Spin, Switch, Table, Tag } from "antd";
 import { ColumnsType, TableProps } from "antd/es/table";
 import { FilterValue } from "antd/es/table/interface";
 import React, { useEffect, useState } from "react";
@@ -22,7 +22,7 @@ import { Role, Status } from "@prisma/client";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
 
-import { Issue, StatusMap } from "@/types/issue";
+import { Issue, ObjectMap } from "@/types/issue";
 import { editIssueSchema, searchIssueSchema } from "@/types/validationSchemas";
 import { errorHandler } from "@/helpers/errorHandler";
 import { ifNull } from "@/helpers/common";
@@ -33,6 +33,7 @@ import Button from "@/components/Button";
 import Input from "@/components/inputGroup/Input";
 import RangePicker from "@/components/inputGroup/RangePicker";
 import useClientSession from "@/hooks/use-client-session";
+import MyTooltip from "@/components/MyTooltip";
 
 type SearchForm = z.infer<typeof searchIssueSchema>;
 type EditForm = z.infer<typeof editIssueSchema>;
@@ -107,7 +108,7 @@ const ListPage = () => {
       try {
         const res = await axios.get("/api/common/user");
         if (res.status === 200) {
-          setUsers(res.data);
+          setUsers(res.data.filteredUsers);
         }
       } catch (err: any) {
         errorHandler(err);
@@ -249,7 +250,7 @@ const ListPage = () => {
       title: "สถานะ",
       dataIndex: "status",
       key: "status",
-      render: (obj: StatusMap) => (
+      render: (obj: ObjectMap) => (
         <Tag color={obj.color} key={obj.value}>
           {obj.label}
         </Tag>
@@ -266,41 +267,41 @@ const ListPage = () => {
       width: "9%",
       render: (value, record) => (
         <div className="flex gap-3 text-lg">
-          <Tooltip title="ดูข้อมูล">
+          <MyTooltip title="ดูข้อมูล">
             <div
               className="cursor-pointer hover:text-blue-300"
               onClick={() => handleViewClick(record)}
             >
               <FaClipboardList />
             </div>
-          </Tooltip>
+          </MyTooltip>
           {(!record.isCompleted || session?.user.role === Role.ADMIN) &&
             record.status.value.toUpperCase() !== Status.CANCELED && (
-              <Tooltip title="แก้ไขงาน">
+              <MyTooltip title="แก้ไขงาน">
                 <Link href={`/list/${record.id}`}>
                   <FaPencilAlt />
                 </Link>
-              </Tooltip>
+              </MyTooltip>
             )}
           {session?.user.role === "ADMIN" &&
             (record.status.value.toUpperCase() !== Status.CANCELED ? (
-              <Tooltip title="ยกเลิกงาน">
+              <MyTooltip title="ยกเลิกงาน">
                 <div
                   className="cursor-pointer hover:text-blue-300"
                   onClick={() => handleCancelClick(record)}
                 >
                   <FaTrash />
                 </div>
-              </Tooltip>
+              </MyTooltip>
             ) : (
-              <Tooltip title="กู้คืนงาน">
+              <MyTooltip title="กู้คืนงาน">
                 <div
                   className="cursor-pointer hover:text-blue-300"
                   onClick={() => handleRestoreClick(record)}
                 >
                   <FaTrashRestore />
                 </div>
-              </Tooltip>
+              </MyTooltip>
             ))}
         </div>
       ),
@@ -401,9 +402,9 @@ const ListPage = () => {
                     active={!status}
                     count={countIssues["ALL"]}
                   >
-                    <Tooltip title="ทั้งหมด">
+                    <MyTooltip title="ทั้งหมด">
                       <span>ทั้งหมด</span>
-                    </Tooltip>
+                    </MyTooltip>
                   </Badge>
                   {statusArr.map((item) => (
                     <Badge
@@ -413,9 +414,9 @@ const ListPage = () => {
                       active={item.value === status}
                       count={countIssues[item.value.toUpperCase()]}
                     >
-                      <Tooltip title={item.label}>
+                      <MyTooltip title={item.label}>
                         <span>{item.label}</span>
-                      </Tooltip>
+                      </MyTooltip>
                     </Badge>
                   ))}
                 </div>

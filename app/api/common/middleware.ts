@@ -1,6 +1,10 @@
 import prisma from "@/prisma/db";
+import { Role } from "@prisma/client";
 
-export const validateUser = async (userId: string | null) => {
+export const validateUser = async (
+  userId: string | null,
+  adminCheck: boolean = false
+) => {
   if (!userId) return false;
 
   try {
@@ -13,6 +17,11 @@ export const validateUser = async (userId: string | null) => {
     if (!user) {
       return false;
     }
+
+    if (adminCheck && user.role !== Role.ADMIN) {
+      return false;
+    }
+
     return user;
   } catch (e) {
     throw e;

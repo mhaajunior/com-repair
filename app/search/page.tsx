@@ -12,7 +12,7 @@ import type { ColumnsType, TableProps } from "antd/es/table";
 import Input from "@/components/inputGroup/Input";
 import Button from "@/components/Button";
 import { searchIssueSchema } from "@/types/validationSchemas";
-import { Issue, StatusMap } from "@/types/issue";
+import { Issue, ObjectMap } from "@/types/issue";
 import { errorHandler } from "@/helpers/errorHandler";
 import { statusMap } from "@/helpers/statusMap";
 import { ifNull } from "@/helpers/common";
@@ -110,14 +110,13 @@ const SearchIssuePage = () => {
       title: "สถานะ",
       dataIndex: "status",
       key: "status",
-      render: (obj: StatusMap) => (
+      render: (obj: ObjectMap) => (
         <Tag color={obj.color} key={obj.value}>
           {obj.label}
         </Tag>
       ),
       fixed: "right",
       filters: filters,
-      filterSearch: true,
       onFilter: (value: any, record: Issue) => record.status.value === value,
     },
   ];

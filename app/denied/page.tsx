@@ -1,7 +1,7 @@
 import React from "react";
 
 const DeniedPage = () => {
-  return <div>DeniedPage</div>;
+  return <div>คุณไม่มีสิทธิที่จะเยี่ยมชมหน้านี้</div>;
 };
 
 export default DeniedPage;

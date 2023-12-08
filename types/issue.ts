@@ -7,7 +7,7 @@ export interface Issue {
   phone: string;
   detail: string;
   fixResult: string | null;
-  status: StatusMap;
+  status: ObjectMap;
   createdAt: string;
   officerId: string | null;
   officer: string | null;
@@ -16,7 +16,7 @@ export interface Issue {
   isCompleted: boolean;
 }
 
-export interface StatusMap {
+export interface ObjectMap {
   value: string;
   label: string;
   color: string;

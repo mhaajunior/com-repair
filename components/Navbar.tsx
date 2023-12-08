@@ -4,8 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import useClientSession from "../hooks/use-client-session";
-import { FaSignOutAlt } from "react-icons/fa";
+import { FaSignOutAlt, FaAngleDown, FaCog } from "react-icons/fa";
 import { Role } from "@prisma/client";
+import { Dropdown, Space } from "antd";
 import Button from "./Button";
 
 const Navbar = () => {
@@ -28,20 +29,39 @@ const Navbar = () => {
       title: "ตารางแสดงใบแจ้ง",
       link: "/list",
       isAuthenticated: true,
-      isAdmin: false,
+      isOnlyAdmin: false,
+    },
+  ];
+
+  let manageItems = [
+    {
+      key: "1",
+      label: (
+        <Link href="/manageUser" className="flex items-center gap-3">
+          <FaCog />
+          จัดการผู้ใช้งาน
+        </Link>
+      ),
     },
     {
-      title: "เพิ่มผู้ใช้",
-      link: "/createUser",
-      isAuthenticated: true,
-      isAdmin: true,
+      key: "2",
+      label: (
+        <Link
+          href="/api/auth/signout?callbackUrl=/"
+          className="flex items-center gap-3"
+        >
+          <FaSignOutAlt />
+          ออกจากระบบ
+        </Link>
+      ),
     },
   ];
 
   if (session) {
     navItems = navItems.filter((item) => item.isAuthenticated);
     if (session.user.role !== Role.ADMIN) {
-      navItems = navItems.filter((item) => !item.isAdmin);
+      navItems = navItems.filter((item) => !item.isOnlyAdmin);
+      manageItems = manageItems.filter((item) => !["1"].includes(item.key));
     }
   } else {
     navItems = navItems.filter((item) => !item.isAuthenticated);
@@ -70,12 +90,21 @@ const Navbar = () => {
           </ul>
           {session ? (
             <ul className="flex items-center gap-8">
-              <li>{session.user.name + " " + session.user.surname}</li>
               <li className="hover:text-black">
-                <Link href="/api/auth/signout?callbackUrl=/">
-                  <FaSignOutAlt className="text-xl" />
-                </Link>
+                <Dropdown
+                  menu={{
+                    items: manageItems,
+                  }}
+                >
+                  <a onClick={(e) => e.preventDefault()}>
+                    <Space>
+                      {session.user.name + " " + session.user.surname}
+                      <FaAngleDown />
+                    </Space>
+                  </a>
+                </Dropdown>
               </li>
+              <li className="hover:text-black"></li>
             </ul>
           ) : (
             <Button
