@@ -11,6 +11,8 @@ import {
   FaIdCard,
   FaPencilAlt,
   FaTrash,
+  FaRegEye,
+  FaRegEyeSlash,
 } from "react-icons/fa";
 import { IoIosAddCircle } from "react-icons/io";
 import { z } from "zod";
@@ -31,7 +33,7 @@ type CreateForm = z.infer<typeof createUserSchema>;
 type EditForm = z.infer<typeof editUserSchema>;
 
 const ManageUserPage = () => {
-  const [users, setUsers] = useState<UserProps[]>([]);
+  const [users, setUsers] = useState<UserProps[] | null>(null);
   const [selectedId, setSelectedId] = useState("");
   const [selectedUser, setSelectedUser] = useState<UserProps | null>(null);
   const [loading, setLoading] = useState(false);
@@ -42,6 +44,8 @@ const ManageUserPage = () => {
   const [showEditPassword, setShowEditPassword] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
+  const [pwVisible, setPwVisible] = useState(false);
+  const [confPwVisible, setConfPwVisible] = useState(false);
   const session = useClientSession();
   const {
     register,
@@ -357,7 +361,7 @@ const ManageUserPage = () => {
             เพิ่มผู้ใช้
           </p>
         </div>
-        {loading ? (
+        {!users ? (
           <Spin size="large" className="flex justify-center" />
         ) : users.length > 0 ? (
           <Table columns={columns} dataSource={users} scroll={{ x: 1000 }} />
@@ -468,19 +472,23 @@ const ManageUserPage = () => {
             <>
               <Input
                 name="password"
-                type="password"
+                type={pwVisible ? "text" : "password"}
                 placeholder="รหัสผ่าน"
                 register={register2}
                 errors={errors2.password}
-                className="w-60 md:w-72"
+                className="w-60 md:w-72 relative"
+                icon={pwVisible ? <FaRegEyeSlash /> : <FaRegEye />}
+                onIconClick={() => setPwVisible((prevState) => !prevState)}
               />
               <Input
                 name="confPassword"
-                type="password"
+                type={confPwVisible ? "text" : "password"}
                 placeholder="ยืนยันรหัสผ่าน"
                 register={register2}
                 errors={errors2.confPassword}
-                className="w-60 md:w-72"
+                className="w-60 md:w-72 relative"
+                icon={confPwVisible ? <FaRegEyeSlash /> : <FaRegEye />}
+                onIconClick={() => setConfPwVisible((prevState) => !prevState)}
               />
               {passwordError && (
                 <div className="w-60 md:w-72 text-red-500 bg-red-100 p-3 rounded-md text-sm">

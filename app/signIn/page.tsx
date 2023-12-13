@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { BsChevronLeft } from "react-icons/bs";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -25,6 +26,7 @@ const SignInPage = (props: Props) => {
   const session = useClientSession();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [visible, setVisible] = useState(false);
   const {
     register,
     handleSubmit,
@@ -82,18 +84,18 @@ const SignInPage = (props: Props) => {
           placeholder="อีเมล"
           register={register}
           errors={errors.email}
-          className="w-full"
+          className="w-full relative"
         />
-
         <Input
           name="password"
-          type="password"
+          type={visible ? "text" : "password"}
           placeholder="รหัสผ่าน"
           register={register}
           errors={errors.password}
-          className="w-full"
+          className="w-full relative"
+          icon={visible ? <FaRegEyeSlash /> : <FaRegEye />}
+          onIconClick={() => setVisible((prevState) => !prevState)}
         />
-
         <Button type="submit" primary className="w-full" loading={loading}>
           เข้าสู่ระบบ
         </Button>

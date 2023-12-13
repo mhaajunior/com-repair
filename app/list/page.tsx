@@ -39,7 +39,7 @@ type SearchForm = z.infer<typeof searchIssueSchema>;
 type EditForm = z.infer<typeof editIssueSchema>;
 
 const ListPage = () => {
-  const [issues, setIssues] = useState<Issue[]>([]);
+  const [issues, setIssues] = useState<Issue[] | null>(null);
   const [filteredIssues, setFilteredIssues] = useState<Issue[]>([]);
   const [countIssues, setCountIssues] = useState<any>([]);
   const [status, setStatus] = useState<string | null>(null);
@@ -124,10 +124,14 @@ const ListPage = () => {
   }, [session]);
 
   useEffect(() => {
-    if (status) {
-      setFilteredIssues(issues.filter((item) => item.status.value === status));
-    } else {
-      setFilteredIssues(issues);
+    if (issues) {
+      if (status) {
+        setFilteredIssues(
+          issues.filter((item) => item.status.value === status)
+        );
+      } else {
+        setFilteredIssues(issues);
+      }
     }
   }, [status, issues]);
 
@@ -319,17 +323,19 @@ const ListPage = () => {
   };
 
   const onSwitchChange = (checked: boolean) => {
-    if (checked) {
-      setShowOnlyUser(true);
-      setFilteredIssues(
-        issues.filter((item) => item.officerId === session?.user.id)
-      );
-      setFilteredInfo({});
-    } else {
-      setShowOnlyUser(false);
-      setFilteredIssues(issues);
-      setStatus(null);
-      setFilteredInfo({});
+    if (issues) {
+      if (checked) {
+        setShowOnlyUser(true);
+        setFilteredIssues(
+          issues.filter((item) => item.officerId === session?.user.id)
+        );
+        setFilteredInfo({});
+      } else {
+        setShowOnlyUser(false);
+        setFilteredIssues(issues);
+        setStatus(null);
+        setFilteredInfo({});
+      }
     }
   };
 
@@ -379,7 +385,7 @@ const ListPage = () => {
           <Switch onChange={onSwitchChange} className="bg-gray-500" />
         </div>
         <div className="mt-10">
-          {loading ? (
+          {!issues ? (
             <Spin size="large" className="flex justify-center" />
           ) : (
             <div>

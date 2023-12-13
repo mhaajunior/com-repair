@@ -1,16 +1,21 @@
 import "@/styles/Input.css";
 import ErrorMessage from "../ErrorMessage";
+import { ReactNode } from "react";
 
 const Input = ({
   placeholder,
   name,
   textarea = false,
+  icon,
+  onIconClick,
   errors,
   ...rest
 }: {
   placeholder: string;
   name: string;
   textarea?: boolean;
+  icon?: ReactNode;
+  onIconClick?: () => void;
   errors: any;
   [rest: string]: any;
 }) => {
@@ -33,6 +38,14 @@ const Input = ({
           rows="4"
           {...rest.register(name)}
         />
+      )}
+      {icon && (
+        <div
+          className="absolute top-4 right-4 text-gray-400 cursor-pointer hover:text-black"
+          onClick={onIconClick}
+        >
+          {icon}
+        </div>
       )}
       <ErrorMessage>{errors?.message}</ErrorMessage>
     </div>

@@ -4,15 +4,36 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import useClientSession from "../hooks/use-client-session";
-import { FaSignOutAlt, FaAngleDown, FaCog } from "react-icons/fa";
+import { FaSignOutAlt, FaAngleDown, FaCog, FaUserEdit } from "react-icons/fa";
 import { Role } from "@prisma/client";
 import { Dropdown, Space } from "antd";
 import Button from "./Button";
+import Swal from "sweetalert2";
+import { signOut } from "next-auth/react";
 
 const Navbar = () => {
   const currentPath = usePathname();
   const session = useClientSession();
   const router = useRouter();
+
+  const doSignOut = async () => {
+    Swal.fire({
+      title: "คำเตือน",
+      text: "คุณแน่ใจที่จะออกจากระบบหรือไม่",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "ลงชื่อออก",
+      cancelButtonText: "ยกเลิก",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        signOut({ callbackUrl: process.env.NEXT_PUBLIC_CALLBACK_URL });
+      }
+    });
+  };
+
+  const editPassword = () => {};
 
   let navItems = [
     {
@@ -46,13 +67,19 @@ const Navbar = () => {
     {
       key: "2",
       label: (
-        <Link
-          href="/api/auth/signout?callbackUrl=/"
-          className="flex items-center gap-3"
-        >
+        <div onClick={editPassword} className="flex items-center gap-3">
+          <FaUserEdit />
+          เปลี่ยนรหัสผ่าน
+        </div>
+      ),
+    },
+    {
+      key: "3",
+      label: (
+        <div onClick={doSignOut} className="flex items-center gap-3">
           <FaSignOutAlt />
           ออกจากระบบ
-        </Link>
+        </div>
       ),
     },
   ];
