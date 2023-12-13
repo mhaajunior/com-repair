@@ -15,6 +15,7 @@ import Input from "@/components/inputGroup/Input";
 import Dropdown from "@/components/inputGroup/Dropdown";
 import Button from "@/components/Button";
 import { errorHandler } from "@/helpers/errorHandler";
+import Swal from "sweetalert2";
 
 type IssueForm = z.infer<typeof createIssueSchema>;
 
@@ -66,9 +67,16 @@ const NewIssuePage = () => {
   const onSubmit = handleSubmit(async (data) => {
     try {
       setLoading(true);
-      await axios.post("/api/issues", data);
-      toast.success("สร้างฟอร์มแจ้งซ่อมสำเร็จ");
-      router.push("/");
+      const res = await axios.post("/api/issues", data);
+      Swal.fire({
+        title: "สร้างสำเร็จ",
+        text: `ใบแจ้งซ่อมของคุณคือใบแจ้งซ่อมเลขที่ ${res.data.id}`,
+        icon: "success",
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: "ตกลง",
+      }).then(() => {
+        router.push("/");
+      });
     } catch (err: any) {
       errorHandler(err);
       setLoading(false);

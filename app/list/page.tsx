@@ -318,16 +318,6 @@ const ListPage = () => {
     setFilteredInfo(filters);
   };
 
-  const renderRowClass = (record: Issue) => {
-    if (record.isCompleted) {
-      return "bg-blue-100";
-    }
-    if (record.status.value.toUpperCase() === Status.CANCELED) {
-      return "bg-gray-200";
-    }
-    return "";
-  };
-
   const onSwitchChange = (checked: boolean) => {
     if (checked) {
       setShowOnlyUser(true);
@@ -422,7 +412,6 @@ const ListPage = () => {
                 </div>
               )}
               <Table
-                rowClassName={(record) => renderRowClass(record)}
                 columns={columns}
                 dataSource={filteredIssues}
                 onChange={onChange}

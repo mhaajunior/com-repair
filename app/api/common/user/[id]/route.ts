@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateUser } from "../../middleware";
 import prisma from "@/prisma/db";
-import { Prisma, Role } from "@prisma/client";
+import { Prisma, Role, Status } from "@prisma/client";
 import { editUserSchema } from "@/types/validationSchemas";
 import bcrypt from "bcrypt";
 
@@ -145,6 +145,15 @@ export const DELETE = async (
         status: 400,
       });
     }
+
+    await prisma.issue.updateMany({
+      where: { officerId: deleteUserId, isCompleted: false },
+      data: {
+        status: Status.ACKNOWLEDGE,
+        fixStartDate: null,
+        officerId: null,
+      },
+    });
 
     await prisma.user.delete({
       where: {

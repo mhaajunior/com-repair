@@ -72,4 +72,8 @@ export const options = {
       return session;
     },
   },
+  session: {
+    jwt: true,
+    maxAge: 24 * 60 * 60,
+  },
 };

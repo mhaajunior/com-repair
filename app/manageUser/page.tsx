@@ -15,7 +15,6 @@ import {
 import { IoIosAddCircle } from "react-icons/io";
 import { z } from "zod";
 import { toast } from "sonner";
-import Swal from "sweetalert2";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Role } from "@prisma/client";
 
@@ -38,7 +37,8 @@ const ManageUserPage = () => {
   const [loading, setLoading] = useState(false);
   const [createModalopen, setCreateModalOpen] = useState(false);
   const [editModalopen, setEditModalOpen] = useState(false);
-  const [promotionModalopen, setPromotionModalOpen] = useState(false);
+  const [actionsModalopen, setActionsModalOpen] = useState(false);
+  const [actionMode, setActionMode] = useState("");
   const [showEditPassword, setShowEditPassword] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -157,7 +157,7 @@ const ManageUserPage = () => {
               <MyTooltip title="ปรับสิทธิ">
                 <div
                   className="cursor-pointer hover:text-blue-300"
-                  onClick={() => handlePromotionClick(record)}
+                  onClick={() => handleActionClick(record, "promotion")}
                 >
                   <FaIdCard />
                 </div>
@@ -165,7 +165,7 @@ const ManageUserPage = () => {
               <MyTooltip title="ลบผู้ใช้">
                 <div
                   className="cursor-pointer hover:text-blue-300"
-                  onClick={() => handleDeleteClick(record)}
+                  onClick={() => handleActionClick(record, "delete")}
                 >
                   <FaTrash />
                 </div>
@@ -232,17 +232,86 @@ const ManageUserPage = () => {
     }
   });
 
-  const onPromotionSubmit = handleSubmit3(async (data) => {
-    if (!data.promotionEmail) {
+  const onActionSubmit = handleSubmit3(async (data) => {
+    if (!data.actionEmail) {
       setEmailError("กรุณากรอกอีเมล");
       return;
     }
 
-    if (data.promotionEmail && data.promotionEmail !== selectedUser?.email) {
+    if (data.actionEmail && data.actionEmail !== selectedUser?.email) {
       setEmailError("อีเมลที่กรอกไม่ถูกต้อง");
       return;
     }
 
+    if (actionMode === "promotion") {
+      promoteUser();
+    } else if (actionMode === "delete") {
+      deleteUser();
+    }
+    setEmailError(null);
+  });
+
+  const onCancelEdit = () => {
+    setEditModalOpen(false);
+    setShowEditPassword(false);
+    clearErrors();
+  };
+
+  const onCancelAction = () => {
+    setActionsModalOpen(false);
+    reset3();
+    setEmailError(null);
+  };
+
+  const handleCreateClick = () => {
+    setCreateModalOpen(true);
+    setEditModalOpen(false);
+    setActionsModalOpen(false);
+  };
+
+  const handleEditClick = (record: UserProps) => {
+    setEditModalOpen(true);
+    setCreateModalOpen(false);
+    setActionsModalOpen(false);
+    setSelectedId(record.id);
+    setValue("email", record.email);
+    setValue("name", record.name);
+    setValue("surname", record.surname);
+    setValue("password", "");
+    setValue("confPassword", "");
+    setPasswordError(null);
+  };
+
+  const handleActionClick = (record: UserProps, mode: string) => {
+    setActionsModalOpen(true);
+    setCreateModalOpen(false);
+    setEditModalOpen(false);
+    setSelectedUser(record);
+    setActionMode(mode);
+  };
+
+  const deleteUser = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.delete(`/api/common/user/${selectedUser?.id}`, {
+        headers: {
+          "user-id": session?.user.id,
+        },
+      });
+      if (res.status === 200) {
+        setActionsModalOpen(false);
+        setLoading(false);
+        toast.success("ลบผู้ใช้งานสำเร็จ");
+        getUsers();
+      }
+    } catch (err: any) {
+      setActionsModalOpen(false);
+      setLoading(false);
+      errorHandler(err);
+    }
+  };
+
+  const promoteUser = async () => {
     try {
       setLoading(true);
       const res = await axios.patch(
@@ -255,92 +324,25 @@ const ManageUserPage = () => {
         }
       );
       if (res.status === 200) {
-        setPromotionModalOpen(false);
+        setActionsModalOpen(false);
         setLoading(false);
         toast.success("ปรับสิทธิผู้ใช้งานสำเร็จ");
         reset3();
         getUsers();
       }
     } catch (err: any) {
-      setPromotionModalOpen(false);
-      setLoading(false);
-      errorHandler(err);
-    }
-  });
-
-  const onCancelEdit = () => {
-    setEditModalOpen(false);
-    setShowEditPassword(false);
-    clearErrors();
-  };
-
-  const onCancelPromotion = () => {
-    setPromotionModalOpen(false);
-    reset3();
-    setEmailError(null);
-  };
-
-  const handleCreateClick = () => {
-    setCreateModalOpen(true);
-    setEditModalOpen(false);
-    setPromotionModalOpen(false);
-  };
-
-  const handleDeleteClick = async (record: UserProps) => {
-    Swal.fire({
-      title: "คำเตือน",
-      text: `คุณต้องการลบผู้ใช้ ${record.email} ใช่หรือไม่`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      cancelButtonText: "ไม่",
-      confirmButtonText: "ใช่",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        deleteUser(record.id);
-      }
-    });
-  };
-
-  const handleEditClick = (record: UserProps) => {
-    setEditModalOpen(true);
-    setCreateModalOpen(false);
-    setPromotionModalOpen(false);
-    setSelectedId(record.id);
-    setValue("email", record.email);
-    setValue("name", record.name);
-    setValue("surname", record.surname);
-    setValue("password", "");
-    setValue("confPassword", "");
-    setPasswordError(null);
-  };
-
-  const handlePromotionClick = (record: UserProps) => {
-    setPromotionModalOpen(true);
-    setCreateModalOpen(false);
-    setEditModalOpen(false);
-    setSelectedUser(record);
-  };
-
-  const deleteUser = async (id: string) => {
-    try {
-      setLoading(true);
-      const res = await axios.delete(`/api/common/user/${id}`, {
-        headers: {
-          "user-id": session?.user.id,
-        },
-      });
-      if (res.status === 200) {
-        setLoading(false);
-        toast.success("ลบผู้ใช้งานสำเร็จ");
-        getUsers();
-      }
-    } catch (err: any) {
+      setActionsModalOpen(false);
       setLoading(false);
       errorHandler(err);
     }
   };
+
+  let actionText = "";
+  if (actionMode === "promotion") {
+    actionText = "เปลี่ยนสิทธิ";
+  } else {
+    actionText = "ลบ";
+  }
 
   return (
     <>
@@ -507,44 +509,54 @@ const ManageUserPage = () => {
       </Modal>
       <Modal
         title={
-          <p className="text-center text-xl">
-            ปรับสิทธิเป็น
-            {selectedUser?.role.value === "admin" ? "เจ้าหน้าที่" : "แอดมิน"}
-          </p>
+          actionMode === "promotion" ? (
+            <p className="text-center text-xl">
+              เปลี่ยนสิทธิเป็น
+              {selectedUser?.role.value === "admin" ? "เจ้าหน้าที่" : "แอดมิน"}
+            </p>
+          ) : (
+            <p className="text-center text-xl">ลบผู้ใช้งาน</p>
+          )
         }
-        open={promotionModalopen}
-        onCancel={onCancelPromotion}
+        open={actionsModalopen}
+        onCancel={onCancelAction}
         okButtonProps={{ style: { display: "none" } }}
         cancelButtonProps={{ style: { display: "none" } }}
       >
         <div className="text-center my-5 text-base">
-          {selectedUser?.role.value.toUpperCase() === Role.OFFICER ? (
-            <span>
-              หากคุณแน่ใจที่จะปรับสิทธิให้ผู้ใช้ {selectedUser.email} เป็นแอดมิน
-            </span>
-          ) : (
-            <span>
-              หากคุณแน่ใจที่จะปรับสิทธิให้ผู้ใช้ {selectedUser?.email}{" "}
-              เป็นเจ้าหน้าที่
-            </span>
+          {actionMode === "promotion" &&
+            (selectedUser?.role.value.toUpperCase() === Role.OFFICER ? (
+              <span>
+                หากคุณแน่ใจที่จะปรับสิทธิให้ผู้ใช้ {selectedUser.email}{" "}
+                เป็นแอดมิน
+              </span>
+            ) : (
+              <span>
+                หากคุณแน่ใจที่จะปรับสิทธิให้ผู้ใช้ {selectedUser?.email}{" "}
+                เป็นเจ้าหน้าที่
+              </span>
+            ))}
+          {actionMode === "delete" && (
+            <span>หากคุณแน่ใจที่จะลบผู้ใช้ {selectedUser?.email}</span>
           )}
           <br />
           <span>
-            กรุณากรอกอีเมลผู้ใช้งานที่ต้องการเปลี่ยนสิทธิลงใน input
-            ด้านล่างให้ถูกต้องเพื่อยืนยันการเปลี่ยนสิทธิ
+            กรุณากรอกอีเมลผู้ใช้งานที่ต้องการ{actionText}
+            ลงในกล่องข้อความด้านล่างให้ถูกต้องเพื่อยืนยันการ
+            {actionText}
           </span>
         </div>
         <form
-          onSubmit={onPromotionSubmit}
+          onSubmit={onActionSubmit}
           className="flex flex-wrap flex-col items-center gap-x-5 gap-y-5 justify-center"
         >
           <div>
             <Input
-              name="promotionEmail"
+              name="actionEmail"
               type="email"
               placeholder="อีเมล"
               register={register3}
-              errors={errors3.promotionEmail}
+              errors={errors3.actionEmail}
               className="w-60 md:w-72"
             />
             <span className="text-red-500">{emailError}</span>
@@ -556,7 +568,7 @@ const ManageUserPage = () => {
               className="!mx-auto w-60 md:w-72"
               loading={loading}
             >
-              เปลี่ยนสิทธิ
+              {actionText}
             </Button>
           </div>
         </form>

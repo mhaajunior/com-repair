@@ -247,9 +247,12 @@ const officerFetchIssues = async (body: SearchIssueParams, userId: string) => {
         workGroup: issue.group.label + " " + issue.team.abb,
         problem: issue.problem.label,
         officerId: issue.officerId,
-        officer: issue.officer?.name
-          ? issue.officer?.name + " " + issue.officer?.surname
-          : null,
+        officer:
+          issue.isCompleted && !issue.officerId
+            ? "บัญชีถูกลบ"
+            : issue.officer?.name
+            ? issue.officer?.name + " " + issue.officer?.surname
+            : null,
         duration: duration ? secondsToDhms(duration) : null,
         note: issue.note,
         isCompleted: issue.isCompleted,
