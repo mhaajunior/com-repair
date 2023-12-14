@@ -201,7 +201,7 @@ const EditPage = () => {
         </Button>
       </div>
       <div className="card">
-        {loading ? (
+        {!issue ? (
           <Spin size="large" className="flex justify-center" />
         ) : (
           <>
