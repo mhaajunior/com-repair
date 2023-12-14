@@ -103,3 +103,48 @@ export const POST = async (req: NextRequest) => {
     throw e;
   }
 };
+
+export const PUT = async (req: NextRequest) => {
+  const body = await req.json();
+  const userId = req.headers.get("user-id");
+
+  try {
+    if (!userId) {
+      return NextResponse.json(null, { status: 401 });
+    } else {
+      const user = await validateUser(userId);
+      if (!user) {
+        return NextResponse.json("ข้อมูลผู้ใช้ไม่ถูกต้อง", { status: 401 });
+      }
+    }
+
+    const found = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!found) {
+      return NextResponse.json("บัญชีผู้ใช้ไม่ถูกต้อง", {
+        status: 400,
+      });
+    }
+
+    if (body.password) {
+      const hashPassword = await bcrypt.hash(body.password, 10);
+      body.password = hashPassword;
+    }
+
+    const updateUser = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: body,
+    });
+
+    return NextResponse.json(updateUser);
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(e);
+    }
+    throw e;
+  }
+};

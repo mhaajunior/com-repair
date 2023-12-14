@@ -52,6 +52,7 @@ const ManageUserPage = () => {
     handleSubmit,
     reset,
     formState: { errors },
+    clearErrors,
   } = useForm<CreateForm>({
     resolver: zodResolver(createUserSchema),
   });
@@ -59,9 +60,9 @@ const ManageUserPage = () => {
     register: register2,
     handleSubmit: handleSubmit2,
     reset: reset2,
-    setValue,
+    setValue: setValue2,
     formState: { errors: errors2 },
-    clearErrors,
+    clearErrors: clearErrors2,
   } = useForm<EditForm>({
     resolver: zodResolver(editUserSchema),
   });
@@ -93,8 +94,8 @@ const ManageUserPage = () => {
 
   useEffect(() => {
     if (!showEditPassword) {
-      setValue("password", "");
-      setValue("confPassword", "");
+      setValue2("password", "");
+      setValue2("confPassword", "");
     }
   }, [showEditPassword]);
 
@@ -190,17 +191,15 @@ const ManageUserPage = () => {
         },
       });
       if (res.status === 201) {
-        setCreateModalOpen(false);
-        setLoading(false);
         toast.success("สร้างผู้ใช้งานสำเร็จ");
-        reset();
         getUsers();
       }
     } catch (err: any) {
-      setCreateModalOpen(false);
-      setLoading(false);
       errorHandler(err);
     }
+    setLoading(false);
+    reset();
+    onCancelCreate();
   });
 
   const onEditSubmit = handleSubmit2(async (data) => {
@@ -222,18 +221,16 @@ const ManageUserPage = () => {
           },
         });
         if (res.status === 200) {
-          setEditModalOpen(false);
-          setLoading(false);
           toast.success("แก้ไขผู้ใช้งานสำเร็จ");
-          reset2();
           getUsers();
         }
       } catch (err: any) {
-        setEditModalOpen(false);
-        setLoading(false);
         errorHandler(err);
       }
     }
+    setLoading(false);
+    reset2();
+    onCancelEdit();
   });
 
   const onActionSubmit = handleSubmit3(async (data) => {
@@ -255,10 +252,15 @@ const ManageUserPage = () => {
     setEmailError(null);
   });
 
+  const onCancelCreate = () => {
+    setCreateModalOpen(false);
+    clearErrors();
+  };
+
   const onCancelEdit = () => {
     setEditModalOpen(false);
     setShowEditPassword(false);
-    clearErrors();
+    clearErrors2();
   };
 
   const onCancelAction = () => {
@@ -271,6 +273,7 @@ const ManageUserPage = () => {
     setCreateModalOpen(true);
     setEditModalOpen(false);
     setActionsModalOpen(false);
+    setPwVisible(false);
   };
 
   const handleEditClick = (record: UserProps) => {
@@ -278,12 +281,14 @@ const ManageUserPage = () => {
     setCreateModalOpen(false);
     setActionsModalOpen(false);
     setSelectedId(record.id);
-    setValue("email", record.email);
-    setValue("name", record.name);
-    setValue("surname", record.surname);
-    setValue("password", "");
-    setValue("confPassword", "");
+    setValue2("email", record.email);
+    setValue2("name", record.name);
+    setValue2("surname", record.surname);
+    setValue2("password", "");
+    setValue2("confPassword", "");
     setPasswordError(null);
+    setPwVisible(false);
+    setConfPwVisible(false);
   };
 
   const handleActionClick = (record: UserProps, mode: string) => {
@@ -303,16 +308,14 @@ const ManageUserPage = () => {
         },
       });
       if (res.status === 200) {
-        setActionsModalOpen(false);
-        setLoading(false);
         toast.success("ลบผู้ใช้งานสำเร็จ");
         getUsers();
       }
     } catch (err: any) {
-      setActionsModalOpen(false);
-      setLoading(false);
       errorHandler(err);
     }
+    setLoading(false);
+    onCancelAction();
   };
 
   const promoteUser = async () => {
@@ -328,17 +331,14 @@ const ManageUserPage = () => {
         }
       );
       if (res.status === 200) {
-        setActionsModalOpen(false);
-        setLoading(false);
         toast.success("ปรับสิทธิผู้ใช้งานสำเร็จ");
-        reset3();
         getUsers();
       }
     } catch (err: any) {
-      setActionsModalOpen(false);
-      setLoading(false);
       errorHandler(err);
     }
+    setLoading(false);
+    onCancelAction();
   };
 
   let actionText = "";
@@ -372,7 +372,7 @@ const ManageUserPage = () => {
       <Modal
         title={<p className="text-center text-xl">ฟอร์มสร้างผู้ใช้งาน</p>}
         open={createModalopen}
-        onCancel={() => setCreateModalOpen(false)}
+        onCancel={onCancelCreate}
         okButtonProps={{ style: { display: "none" } }}
         cancelButtonProps={{ style: { display: "none" } }}
       >
@@ -404,11 +404,13 @@ const ManageUserPage = () => {
           />
           <Input
             name="password"
-            type="password"
+            type={pwVisible ? "text" : "password"}
             placeholder="รหัสผ่าน"
             register={register}
             errors={errors.password}
-            className="w-60 md:w-72"
+            className="w-60 md:w-72 relative"
+            icon={pwVisible ? <FaRegEyeSlash /> : <FaRegEye />}
+            onIconClick={() => setPwVisible((prevState) => !prevState)}
           />
           <div className="w-full text-center">
             <Button
