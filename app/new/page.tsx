@@ -69,8 +69,8 @@ const NewIssuePage = () => {
       setLoading(true);
       const res = await axios.post("/api/issues", data);
       Swal.fire({
-        title: "สร้างสำเร็จ",
-        text: `ใบแจ้งซ่อมของคุณคือใบแจ้งซ่อมเลขที่ ${res.data.id}`,
+        title: `สร้างใบแจ้งซ่อมเลขที่ ${res.data.id} สำเร็จ`,
+        text: "กรุณาจำหมายเลขใบแจ้งซ่อมของคุณเพื่อให้ง่ายต่อการค้นหาและติดตาม",
         icon: "success",
         confirmButtonColor: "#3085d6",
         confirmButtonText: "ตกลง",
