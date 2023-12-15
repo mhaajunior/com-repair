@@ -1,5 +1,4 @@
 export interface Issue {
-  key: number;
   id: number;
   sender: string;
   workGroup: string;

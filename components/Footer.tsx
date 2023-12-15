@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import React from "react";
 
@@ -11,22 +10,19 @@ const Footer = () => {
     <>
       {!currentPath.startsWith("/sign") && (
         <footer className="w-full p-8 mt-auto">
-          <div className="lg:flex lg:text-xl text-lg text-gray-500 mx-auto items-center justify-between">
-            <div className="w-1/4 mx-auto">
-              <Image
-                src="/nso-logo.png"
-                alt="nso logo"
-                width={300}
-                height={30}
-              />
-            </div>
-            <div className="md:space-y-3 text-center lg:text-left">
-              <p>ศูนย์เทคโนโลยีสารสนเทศและการสื่อสาร กลุ่มบริการและสนับสนุน</p>
+          <div className="lg:text-xl text-lg text-gray-500 mx-auto">
+            <div className="md:space-y-3 text-center">
               <p>
-                Services and Support Group Information & Communication
-                Technology Center
+                ศูนย์เทคโนโลยีสารสนเทศและการสื่อสาร
+                กลุ่มบริการและสนับสนุนระบบคอมพิวเตอร์
               </p>
-              <p>โทร. 17373, 17372</p>
+              <p>
+                Computer System Services and Support Group, Information &
+                Communication Technology Center
+              </p>
+              <p></p>
+              <p>โทร. 17372, 17373</p>
+              <p className="text-sm">พัฒนาโดย นายธีธัช วระโพธิ์ กพป. ศท.</p>
             </div>
           </div>
         </footer>

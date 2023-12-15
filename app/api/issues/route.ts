@@ -23,6 +23,10 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json("ข้อมูลที่กรอกมีข้อมูลว่าง", { status: 400 });
   }
 
+  if (!parseInt(phone)) {
+    return NextResponse.json("หมายเลขโทรศัพท์ไม่ถูกต้อง", { status: 400 });
+  }
+
   try {
     const newIssue = await prisma.issue.create({
       data: {

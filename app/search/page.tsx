@@ -59,12 +59,16 @@ const SearchIssuePage = () => {
       title: "ลำดับ",
       dataIndex: "key",
       key: "key",
-      sorter: (a, b) => a.key - b.key,
+      width: "5%",
+      align: "center",
+      render: (item, record, index) => <>{index + 1}</>,
     },
     {
       title: "เลขที่ใบแจ้ง",
       dataIndex: "id",
       key: "id",
+      align: "center",
+      sorter: (a, b) => a.id - b.id,
     },
     {
       title: "ผู้แจ้ง",
@@ -117,6 +121,7 @@ const SearchIssuePage = () => {
       ),
       fixed: "right",
       filters: filters,
+      width: "7%",
       onFilter: (value: any, record: Issue) => record.status.value === value,
     },
   ];

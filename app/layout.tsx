@@ -36,7 +36,7 @@ export default async function RootLayout({
         >
           <AuthProvider>
             <Toaster richColors={true} position="top-right" />
-            <div className="sm:px-16 md:px-24 px-8 py-5">
+            <div className="sm:px-16 md:px-24 px-6 py-5">
               <Navbar />
               <div className="pt-8">{children}</div>
             </div>

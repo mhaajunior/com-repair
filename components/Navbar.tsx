@@ -158,7 +158,7 @@ const Navbar = () => {
           <ul className="flex items-center gap-8">
             <li>
               <Link href="/">
-                <Image src="/logo.png" alt="logo" width={100} height={30} />
+                <Image src="/nso-logo.png" alt="logo" width={130} height={30} />
               </Link>
             </li>
             {navItems.map((item) => (
