@@ -154,7 +154,7 @@ const Navbar = () => {
   return (
     <>
       {!currentPath.startsWith("/sign") && (
-        <nav className="flex justify-between items-center text-gray-500 font-semibold">
+        <nav className="flex justify-between items-center text-gray-500 font-semibold gap-x-2">
           <ul className="flex items-center gap-8">
             <li>
               <Link href="/">

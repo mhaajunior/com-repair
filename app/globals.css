@@ -63,3 +63,9 @@ body {
 .ant-btn-primary {
   background-color: #1677ff !important;
 }
+
+@media only screen and (max-width: 600px) {
+  .card {
+    padding: 20px;
+  }
+}

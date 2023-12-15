@@ -105,6 +105,7 @@ const ManageUserPage = () => {
       dataIndex: "key",
       key: "key",
       width: "7%",
+      render: (item, record, index) => <>{index + 1}</>,
     },
     {
       title: "อีเมล",

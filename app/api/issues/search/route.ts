@@ -104,6 +104,7 @@ const userFetchIssues = async (body: SearchIssueParams) => {
         duration = moment.duration(fixEndDate.diff(fixStartDate, "seconds"));
       }
       issues.push({
+        key: index,
         id: issue.id,
         sender: issue.name + " " + issue.surname,
         status: statusMap[issue.status],
@@ -235,6 +236,7 @@ const officerFetchIssues = async (body: SearchIssueParams, userId: string) => {
         duration = moment.duration(fixEndDate.diff(fixStartDate, "seconds"));
       }
       issues.push({
+        key: index,
         id: issue.id,
         sender: issue.name + " " + issue.surname,
         status: statusMap[issue.status],

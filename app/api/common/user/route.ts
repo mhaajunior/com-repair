@@ -36,7 +36,7 @@ export const GET = async () => {
       });
 
       users.push({
-        key: index + 1,
+        key: index,
         id: user.id,
         email: user.email,
         name: user.name,

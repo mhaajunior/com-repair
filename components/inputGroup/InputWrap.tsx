@@ -16,7 +16,7 @@ const InputWrap = ({
   [rest: string]: any;
 }) => {
   const classes = classNames(
-    `${rest.className} sm:flex py-5 px-8 items-center`,
+    `${rest.className} sm:flex py-5 sm:px-8 px-4 items-center`,
     {
       "!items-start": alignStart,
       error: !isValid,
