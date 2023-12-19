@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Empty, Modal, Spin, Tag } from "antd";
+import { Modal, Spin, Tag } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import {
@@ -21,7 +21,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Role } from "@prisma/client";
 
 import { ObjectMap } from "@/types/issue";
-import { UserProps } from "@/types/userProps";
+import { UserProps } from "@/types/outputProps";
 import { createUserSchema, editUserSchema } from "@/types/validationSchemas";
 import { errorHandler } from "@/helpers/errorHandler";
 import useClientSession from "@/hooks/use-client-session";
@@ -75,22 +75,18 @@ const ManageUserPage = () => {
 
   const getUsers = async () => {
     try {
-      const res = await axios.get("/api/common/user");
-      if (res.status === 200) {
-        setUsers(res.data.users);
-      }
+      setLoading(true);
+      const { data } = await axios.get("/api/common/user");
+      setUsers(data);
     } catch (err: any) {
       errorHandler(err);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
-    if (session) {
-      setLoading(true);
-      getUsers();
-      setLoading(false);
-    }
-  }, [session]);
+    getUsers();
+  }, []);
 
   useEffect(() => {
     if (!showEditPassword) {
@@ -183,6 +179,7 @@ const ManageUserPage = () => {
     },
   ];
 
+  // create
   const onCreateSubmit = handleSubmit(async (data) => {
     try {
       setLoading(true);
@@ -202,6 +199,25 @@ const ManageUserPage = () => {
     reset();
     onCancelCreate();
   });
+
+  const onCancelCreate = () => {
+    setCreateModalOpen(false);
+    clearErrors();
+  };
+
+  const handleCreateClick = () => {
+    setCreateModalOpen(true);
+    setEditModalOpen(false);
+    setActionsModalOpen(false);
+    setPwVisible(false);
+  };
+
+  // edit
+  const onCancelEdit = () => {
+    setEditModalOpen(false);
+    setShowEditPassword(false);
+    clearErrors2();
+  };
 
   const onEditSubmit = handleSubmit2(async (data) => {
     if (data.password && data.password !== data.confPassword) {
@@ -234,6 +250,22 @@ const ManageUserPage = () => {
     onCancelEdit();
   });
 
+  const handleEditClick = (record: UserProps) => {
+    setEditModalOpen(true);
+    setCreateModalOpen(false);
+    setActionsModalOpen(false);
+    setSelectedId(record.id);
+    setValue2("email", record.email);
+    setValue2("name", record.name);
+    setValue2("surname", record.surname);
+    setValue2("password", "");
+    setValue2("confPassword", "");
+    setPasswordError(null);
+    setPwVisible(false);
+    setConfPwVisible(false);
+  };
+
+  // promote or cancel
   const onActionSubmit = handleSubmit3(async (data) => {
     if (!data.actionEmail) {
       setEmailError("กรุณากรอกอีเมล");
@@ -253,43 +285,10 @@ const ManageUserPage = () => {
     setEmailError(null);
   });
 
-  const onCancelCreate = () => {
-    setCreateModalOpen(false);
-    clearErrors();
-  };
-
-  const onCancelEdit = () => {
-    setEditModalOpen(false);
-    setShowEditPassword(false);
-    clearErrors2();
-  };
-
   const onCancelAction = () => {
     setActionsModalOpen(false);
     reset3();
     setEmailError(null);
-  };
-
-  const handleCreateClick = () => {
-    setCreateModalOpen(true);
-    setEditModalOpen(false);
-    setActionsModalOpen(false);
-    setPwVisible(false);
-  };
-
-  const handleEditClick = (record: UserProps) => {
-    setEditModalOpen(true);
-    setCreateModalOpen(false);
-    setActionsModalOpen(false);
-    setSelectedId(record.id);
-    setValue2("email", record.email);
-    setValue2("name", record.name);
-    setValue2("surname", record.surname);
-    setValue2("password", "");
-    setValue2("confPassword", "");
-    setPasswordError(null);
-    setPwVisible(false);
-    setConfPwVisible(false);
   };
 
   const handleActionClick = (record: UserProps, mode: string) => {
@@ -364,10 +363,8 @@ const ManageUserPage = () => {
         </div>
         {!users ? (
           <Spin size="large" className="flex justify-center" />
-        ) : users.length > 0 ? (
-          <Table columns={columns} dataSource={users} scroll={{ x: 1000 }} />
         ) : (
-          <Empty />
+          <Table columns={columns} dataSource={users} scroll={{ x: 1000 }} />
         )}
       </div>
       <Modal

@@ -111,3 +111,20 @@ export const editUserSchema = z.object({
     .max(32, "รายละเอียดที่กรอกยาวเกินกว่าที่กำหนด")
     .optional(),
 });
+
+export const createTeamGroupSchema = z.object({
+  teamId: z.number().optional(),
+  label: z
+    .string()
+    .min(1, "กรุณากรอกศูนย์/กอง")
+    .max(32, "รายละเอียดที่กรอกยาวเกินกว่าที่กำหนด"),
+  abb: z.string().optional(),
+});
+
+export const editTeamGroupSchema = z.object({
+  label: z
+    .string()
+    .min(1, "กรุณากรอกกลุ่ม")
+    .max(32, "รายละเอียดที่กรอกยาวเกินกว่าที่กำหนด"),
+  abb: z.string().optional(),
+});

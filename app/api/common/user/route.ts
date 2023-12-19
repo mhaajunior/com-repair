@@ -1,6 +1,6 @@
 import { roleMap } from "@/helpers/roleMap";
 import prisma from "@/prisma/db";
-import { UserProps } from "@/types/userProps";
+import { UserProps } from "@/types/outputProps";
 import { Prisma } from "@prisma/client";
 import moment from "moment";
 import { NextRequest, NextResponse } from "next/server";
@@ -10,7 +10,6 @@ import { validateUser } from "../middleware";
 
 export const GET = async () => {
   try {
-    const filteredUsers: { text: string; value: string }[] = [];
     const users: UserProps[] = [];
 
     const res = await prisma.user.findMany({
@@ -30,11 +29,6 @@ export const GET = async () => {
     });
 
     res.forEach((user, index) => {
-      filteredUsers.push({
-        text: `${user.name} ${user.surname}`,
-        value: `${user.name} ${user.surname}`,
-      });
-
       users.push({
         key: index,
         id: user.id,
@@ -46,7 +40,7 @@ export const GET = async () => {
       });
     });
 
-    return NextResponse.json({ filteredUsers, users });
+    return NextResponse.json(users);
   } catch (e) {
     if (e instanceof Prisma.PrismaClientKnownRequestError) {
       console.log(e);

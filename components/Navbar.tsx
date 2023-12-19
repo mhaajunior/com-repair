@@ -11,6 +11,7 @@ import {
   FaUserEdit,
   FaRegEyeSlash,
   FaRegEye,
+  FaHouseUser,
 } from "react-icons/fa";
 import { Role } from "@prisma/client";
 import { Dropdown, Modal, Space } from "antd";
@@ -40,7 +41,7 @@ const Navbar = () => {
     formState: { errors },
   } = useForm();
 
-  const doSignOut = async () => {
+  const doSignOut = () => {
     Swal.fire({
       title: "คำเตือน",
       text: "คุณแน่ใจที่จะออกจากระบบหรือไม่",
@@ -89,6 +90,15 @@ const Navbar = () => {
     {
       key: "2",
       label: (
+        <Link href="/manageTeam" className="flex items-center gap-3">
+          <FaHouseUser />
+          จัดการศูนย์/กอง
+        </Link>
+      ),
+    },
+    {
+      key: "3",
+      label: (
         <div
           onClick={() => setModalOpen(true)}
           className="flex items-center gap-3"
@@ -99,7 +109,7 @@ const Navbar = () => {
       ),
     },
     {
-      key: "3",
+      key: "4",
       label: (
         <div onClick={doSignOut} className="flex items-center gap-3">
           <FaSignOutAlt />
@@ -113,7 +123,9 @@ const Navbar = () => {
     navItems = navItems.filter((item) => item.isAuthenticated);
     if (session.user.role !== Role.ADMIN) {
       navItems = navItems.filter((item) => !item.isOnlyAdmin);
-      manageItems = manageItems.filter((item) => !["1"].includes(item.key));
+      manageItems = manageItems.filter(
+        (item) => !["1", "2"].includes(item.key)
+      );
     }
   } else {
     navItems = navItems.filter((item) => !item.isAuthenticated);

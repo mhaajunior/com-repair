@@ -34,6 +34,7 @@ import Input from "@/components/inputGroup/Input";
 import RangePicker from "@/components/inputGroup/RangePicker";
 import useClientSession from "@/hooks/use-client-session";
 import MyTooltip from "@/components/MyTooltip";
+import { UserSelectOption } from "@/types/selectOption";
 
 type SearchForm = z.infer<typeof searchIssueSchema>;
 type EditForm = z.infer<typeof editIssueSchema>;
@@ -43,7 +44,7 @@ const ListPage = () => {
   const [filteredIssues, setFilteredIssues] = useState<Issue[]>([]);
   const [countIssues, setCountIssues] = useState<any>([]);
   const [status, setStatus] = useState<string | null>(null);
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<UserSelectOption[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<Issue | null>(null);
@@ -106,10 +107,17 @@ const ListPage = () => {
   useEffect(() => {
     const getUsers = async () => {
       try {
-        const res = await axios.get("/api/common/user");
-        if (res.status === 200) {
-          setUsers(res.data.filteredUsers);
+        const { data } = await axios.get("/api/common/user");
+
+        const filteredUsers: UserSelectOption[] = [];
+
+        for (let user of data) {
+          filteredUsers.push({
+            text: `${user.name} ${user.surname}`,
+            value: `${user.name} ${user.surname}`,
+          });
         }
+        setUsers(filteredUsers);
       } catch (err: any) {
         errorHandler(err);
       }

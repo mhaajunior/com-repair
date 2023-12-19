@@ -6,3 +6,8 @@ export interface SelectOption {
 export interface SelectOptionWithTeam extends SelectOption {
   teamId: number;
 }
+
+export interface UserSelectOption {
+  text: string;
+  value: string;
+}

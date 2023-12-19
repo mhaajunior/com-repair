@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import Swal from "sweetalert2";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { createIssueSchema } from "@/types/validationSchemas";
@@ -15,7 +15,6 @@ import Input from "@/components/inputGroup/Input";
 import Dropdown from "@/components/inputGroup/Dropdown";
 import Button from "@/components/Button";
 import { errorHandler } from "@/helpers/errorHandler";
-import Swal from "sweetalert2";
 
 type IssueForm = z.infer<typeof createIssueSchema>;
 
@@ -41,10 +40,38 @@ const NewIssuePage = () => {
   useEffect(() => {
     const getDropdownData = async () => {
       try {
-        const { data } = await axios.get("/api/common");
-        setTeams(data.teams);
-        setGroups(data.groups);
-        setProblems(data.problems);
+        const { data: teams } = await axios.get("/api/common/team");
+        const { data: groups } = await axios.get("/api/common/group");
+        const { data: problems } = await axios.get("/api/common/problem");
+
+        const dropdownTeams: SelectOption[] = [];
+        const dropdownGroups: SelectOptionWithTeam[] = [];
+        const dropdownProblems: SelectOption[] = [];
+
+        for (let team of teams) {
+          dropdownTeams.push({
+            value: team.id,
+            label: team.abb ? `${team.label} (${team.abb})` : team.label,
+          });
+        }
+        setTeams(dropdownTeams);
+
+        for (let group of groups) {
+          dropdownGroups.push({
+            value: group.id,
+            label: group.label,
+            teamId: group.teamId,
+          });
+        }
+        setGroups(dropdownGroups);
+
+        for (let problem of problems) {
+          dropdownProblems.push({
+            value: problem.id,
+            label: problem.label,
+          });
+        }
+        setProblems(dropdownProblems);
       } catch (err: any) {
         errorHandler(err);
       }

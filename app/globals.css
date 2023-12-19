@@ -64,6 +64,14 @@ body {
   background-color: #1677ff !important;
 }
 
+.ant-collapse-header {
+  align-items: center !important;
+}
+
+.ant-dropdown {
+  z-index: 999 !important;
+}
+
 @media only screen and (max-width: 600px) {
   .card {
     padding: 20px;
